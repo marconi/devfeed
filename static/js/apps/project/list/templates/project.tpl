@@ -1,0 +1,1 @@
+<a href="/projects/<%= id %>">Footy Sprofila <i class="icon-play-sign"></i></a>

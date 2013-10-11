@@ -1,0 +1,87 @@
+@import "compass/css3/box-shadow";
+@import "compass/css3/border-radius";
+
+form {
+  margin: 0;
+
+  button,
+  input,
+  input:focus {
+    outline: none !important;
+    @include box-shadow(none !important);
+  }
+
+  input.error {
+    margin: 0;
+  }
+
+  span.error {
+    background: none;
+    color: $red;
+    font-size: 14px;
+    margin: 5px 0 15px 0;
+    display: inline-block;
+    font-weight: normal;
+  }
+}
+
+@mixin form {
+  > div {
+    margin-top: 60px;
+    margin-bottom: 60px;
+    background: $white;
+    @include border-radius(0px 0px 5px 5px);
+
+    .title.columns {
+      padding: 15px;
+      background: $navyBlue;
+      @include border-radius(5px 5px 0px 0px);
+
+      h3 {
+        margin: 0;
+        font-size: 20px;
+        line-height: 20px;
+        font-weight: bold;
+        color: $white;
+      }
+    }
+
+    .row {
+      input[type=text],
+      input[type=password] {
+        border: 0;
+        background: $lighterBlue;
+        font-size: 16px;
+        @include border-radius(5px);
+      }
+
+      form {
+        overflow: hidden;
+        padding: 20px;
+
+        .actions {
+          button {
+            margin: 0;
+            border: 0;
+            background: $navyBlue;
+            @include border-radius(5px);
+          }
+
+          .sep {
+            display: inline-block;
+            padding: 0 10px;
+          }
+        }
+      }
+    }
+  }
+}
+
+#login,
+#register,
+#forgot-password,
+#activation,
+#general-settings,
+#pivotal-settings {
+  @include form();
+}

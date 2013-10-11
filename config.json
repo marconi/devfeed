@@ -1,0 +1,25 @@
+{
+    "App": {
+        "Port": 9999,
+        "Templates": "templates",
+        "SecretKey": "CwZXzciyLvVX7d6vPTCt",
+        "SessConnPool": 10,
+        "SessName": "devfeed",
+        "BaseUrl": "http://devfeed.com",
+        "Debug": true
+    },
+    "Redis": {
+        "Url": "localhost:6379"
+    },
+    "Mongo": {
+        "Name": "devfeed",
+        "Url": "mongodb://localhost:27017"
+    },
+    "Email": {
+        "DefaultFrom": "caketoad@gmail.com",
+        "Url": "localhost:1025"
+    },
+    "Sentry": {
+        "Dns": "http://727c6828da89456589080ed927ea5e00:310d3182d97e4d128c8f64316c915808@localhost:9000/1"
+    }
+}

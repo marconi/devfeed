@@ -1,0 +1,1 @@
+ <%= message %> <a href="#" class="close">&times;</a>

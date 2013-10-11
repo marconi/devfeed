@@ -1,0 +1,100 @@
+html,
+body,
+#container {
+  height: 100%;
+}
+
+body {
+  background: $lighterGray;
+}
+
+.row.full {
+  width: 100%;
+  max-width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+
+  > .columns {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+#header-region {
+  position: absolute;
+  width: 100%;
+}
+
+#content-wrapper {
+  height: 100%;
+
+  #content-region {
+    padding-top: 44px;
+    height: 100%;
+
+    #sidebar-region {
+      height: 100%;
+    }
+  }
+}
+
+.alert-box {
+  padding-right: 30px;
+  line-height: 20px;
+
+  a {
+    color: $white;
+    text-decoration: underline;
+
+    &.close {
+      text-decoration: none;
+    }
+  }
+}
+
+#notification {
+  display: none;
+  position: fixed;
+  cursor: pointer;
+  width: 100%;
+  background: $white;
+  text-align: center;
+  z-index: 9999;
+  padding: 13px;
+
+  span {
+    display: inline-block;
+    margin-right: 5px;
+    color: $aqua;
+  }
+
+  .close {
+    font-size: 20px;
+    line-height: 15px;
+    color: $red;
+  }
+}
+
+#preloader {
+  margin-top: 100px;
+  margin-bottom: 50px;
+
+  .loading,
+  .message {
+    float: left;
+  }
+
+  .loading {
+    width: 100px;
+    height: 100px;
+    display: inline-block;
+  }
+
+  .message {
+    display: inline-block;
+    font-size: 25px;
+    font-weight: bold;
+    margin: 35px 0 0 5px;
+    text-shadow: 0px 1px 1px $white;
+  }
+}

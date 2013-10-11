@@ -1,0 +1,33 @@
+doctype 5
+html
+  head
+    title
+      block title
+        | DevFeed. Hash out stories.
+    meta[charset="utf-8"]
+    link[rel="stylesheet"][type="text/css"][href="/static/font-awesome/css/font-awesome.min.css"]
+    link[rel="stylesheet"][type="text/css"][href="/static/css/app.css"][media="screen, projector, print"]
+  body
+    div#container
+      div[id="header-region"].row.full
+      div#content-wrapper
+        if len(Flashes) > 0
+          div[id="notification"]
+            each $msg in Flashes
+              span #{$msg}
+
+        div#content-region
+
+    script[type="text/javascript"]
+      var CONFIG = {
+        baseUrl: "#{Request.Host}",
+        projChanName: "footy-sprofila",
+        wsDebug: true
+      };
+
+    if User
+      script[type="text/javascript"]#projects-data
+        var Projects = #{Projects}
+
+    // script[type="text/javascript"][src="/static/js/main.build.js"]
+    script[type="text/javascript"][src="/static/js/vendors/require.js"][data-main="/static/js/main"]

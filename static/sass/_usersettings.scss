@@ -1,0 +1,50 @@
+#general-settings,
+#pivotal-settings {
+  .vertical-tabs {
+    margin: 0;
+    visibility: visible;
+
+    .content {
+      border: none;
+      border-left: 1px solid $lighterGray;
+      background: none;
+      padding: 20px;
+      margin-left: 1px;
+
+      form {
+        padding: 0;
+      }
+    }
+
+    section {
+      .title a {
+        padding-left: 17.125px;
+        border-bottom: 1px solid $lightestBlue;
+
+        &:hover {
+          padding-left: 13.125px;
+        }
+      }
+      &.active .title a {
+        padding-left: 13.125px;
+      }
+
+      .title a:hover,
+      &.active .title a {
+        border-left: 4px solid $lightBlue;
+      }
+
+      .title {
+        border: 0;
+      }
+
+      &.general .title {
+        top: 0px;
+      }
+
+      &.pivotal .title {
+        top: 49px;
+      }
+    }
+  }
+}

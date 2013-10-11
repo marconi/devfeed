@@ -1,0 +1,18 @@
+doctype 5
+html
+  head
+    title DevFeed Tests
+    link[rel="stylesheet"][type="text/css"][href="/js/tests/vendors/mocha/mocha.css"]
+    script[type="text/javascript"][src="/js/tests/vendors/mocha/mocha.js"]
+    script[type="text/javascript"][src="/js/tests/vendors/chai.js"]
+    script[type="text/javascript"][src="/js/tests/vendors/sinon.js"]
+    script[type="text/javascript"][src="/js/tests/vendors/sinon-chai.js"]
+    script[type="text/javascript"]
+      var expect = chai.expect;
+      mocha.setup('bdd');
+    script[type="text/javascript"][src="/js/vendors/require.js"][data-main="/js/test"]
+
+  body
+    div[id="container"]
+      div[id="header-region"].row.full
+      div[id="content-region"]

@@ -1,0 +1,34 @@
+<html>
+<head>
+  <title>Devfeed Tests</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <link rel="stylesheet" type="text/css" href="/tests/vendors/mocha/mocha.css">
+  <script type="text/javascript" src="/tests/vendors/mocha/mocha.js"></script>
+  <script type="text/javascript" src="/tests/vendors/chai.js"></script>
+  <script type="text/javascript" src="/tests/vendors/sinon.js"></script>
+  <script type="text/javascript" src="/tests/vendors/sinon-chai.js"></script>
+  <script type="text/javascript">
+    var expect = chai.expect;
+    mocha.setup('bdd');
+
+    window.onload = function() {
+      mocha.run();
+    };
+  </script>
+
+  <script type="text/javascript" src="/vendors/require.js" data-main="/main"></script>
+
+  <!-- Include our specs. -->
+  <script type="text/javascript" src="/tests/specs/auth_app.spec.js"></script>
+
+</head>
+<body>
+
+  <div id="mocha"></div>
+
+  <!-- Test Fixtures. -->
+  <div id="fixtures" style="display: none; visibility: hidden;"></div>
+
+</body>
+</html>

@@ -1,0 +1,7 @@
+Hello {{.User.Name}}!
+
+Click the following link to activate your account:
+{{.Link}}
+
+
+~Marconi

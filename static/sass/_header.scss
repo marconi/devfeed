@@ -1,0 +1,97 @@
+@import "compass/css3/border-radius";
+@import "compass/css3/box-shadow";
+
+#header-region {
+  background: $darkNavyBlue;
+  padding: 12px;
+
+  h1 {
+    margin: 0;
+    font-size: 20px;
+    line-height: 20px;
+    font-weight: bold;
+
+    a {
+      color: $white;
+    }
+  }
+
+  #userinfo-region {
+    float: right;
+
+    #user-name {
+      color: $white;
+      margin-right: 30px;
+      font-size: 16px;
+
+      &:after {
+        content: " ";
+        width: 0;
+        height: 0;
+        border-left: 7px solid transparent;
+        border-right: 7px solid transparent;
+        border-top: 7px solid $white;
+        position: absolute;
+        top: 5px;
+        margin-left: 10px;
+      }
+
+      &:hover {
+        color: $lighterVioletBlue;
+
+        &:after {
+          border-top-color: $lighterVioletBlue;
+        }
+      }
+    }
+
+    #userinfo-menu {
+      margin: 0;
+      border: 0;
+      right: -4px;
+      width: 160px !important;
+      left: auto !important;
+      top: -9999px !important;
+      @include box-shadow($lightGray -2px 2px 0px 0px);
+      @include border-radius(3px);
+
+      a {
+        padding: 8px 10px;
+
+        i {
+          display: inline-block;
+          margin-right: 5px;
+        }
+
+        &:hover {
+          color: $aqua;
+        }
+      }
+
+      a,
+      a i {
+        font-size: 14px;
+      }
+
+      &.open {
+        top: 25px !important;
+      }
+
+      .settings {
+        border-bottom: 1px solid $lighterGray;
+      }
+
+      .settings:hover {
+        @include border-radius(3px 3px 0px 0px);
+      }
+
+      .logout:hover {
+        @include border-radius(0px 0px 3px 3px);
+      }
+
+      li:hover {
+        background: $lighterBlue;
+      }
+    }
+  }
+}
