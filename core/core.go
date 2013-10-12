@@ -3,10 +3,16 @@ package core
 import (
 	"encoding/gob"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
+	"reflect"
+	"strconv"
+	"strings"
 
 	"github.com/boj/redistore"
+	log "github.com/cihub/seelog"
 	"github.com/gorilla/sessions"
 	"labix.org/v2/mgo"
 )
@@ -44,6 +50,53 @@ type AppConfig struct {
 	}
 }
 
+// merge settings from envars
+func mergeEnv(s interface{}) {
+	rType := reflect.TypeOf(s)
+	rVal := reflect.ValueOf(s)
+
+	numFields := rType.Elem().NumField()
+	for i := 0; i < numFields; i++ {
+		fType := rType.Elem().Field(i)
+		fVal := rVal.Elem().Field(i)
+
+		fNumFields := fType.Type.NumField()
+		for j := 0; j < fNumFields; j++ {
+			ffField := fType.Type.Field(j)
+			ffVal := fVal.Field(j)
+
+			envName := strings.ToUpper(fmt.Sprintf("%s_%s", fType.Name, ffField.Name))
+			switch ffField.Type.Kind() {
+			case reflect.Int:
+				envVal := os.Getenv(envName)
+				if envVal != "" {
+					envVal, err := strconv.ParseInt(envVal, 10, 0)
+					if err != nil {
+						log.Info("Unable to parse settings: ", envName)
+					} else {
+						ffVal.SetInt(envVal)
+					}
+				}
+			case reflect.String:
+				envVal := os.Getenv(envName)
+				if envVal != "" {
+					ffVal.SetString(envVal)
+				}
+			case reflect.Bool:
+				envVal := os.Getenv(envName)
+				if envVal != "" {
+					envVal, err := strconv.ParseBool(envVal)
+					if err != nil {
+						log.Info("Unable to parse settings: ", envName)
+					} else {
+						ffVal.SetBool(envVal)
+					}
+				}
+			}
+		}
+	}
+}
+
 func LoadConfig() {
 	file, err := ioutil.ReadFile("config.json")
 	if err != nil {
@@ -54,6 +107,9 @@ func LoadConfig() {
 	if err = json.Unmarshal(file, Config); err != nil {
 		panic("error parsing config: " + err.Error())
 	}
+
+	// merge settings from envars
+	mergeEnv(Config)
 }
 
 func InitMongo() {

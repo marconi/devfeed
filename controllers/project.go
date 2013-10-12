@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"strconv"
 
+	log "github.com/cihub/seelog"
 	"github.com/marconi/devfeed/core"
 	"github.com/marconi/devfeed/db"
-	log "github.com/cihub/seelog"
 	"github.com/stretchr/goweb"
 	"github.com/stretchr/goweb/context"
 )
@@ -29,9 +29,9 @@ func IsLoggedIn(ctx context.Context) (*db.User, bool) {
 	}
 }
 
-type ProjectsController struct{}
+type ProjController struct{}
 
-func (c *ProjectsController) ReadMany(ctx context.Context) error {
+func (c *ProjController) ReadMany(ctx context.Context) error {
 	user, isLoggedIn := IsLoggedIn(ctx)
 	if !isLoggedIn {
 		return goweb.Respond.WithStatus(ctx, http.StatusUnauthorized)
@@ -44,7 +44,7 @@ func (c *ProjectsController) ReadMany(ctx context.Context) error {
 	return goweb.API.RespondWithData(ctx, projects)
 }
 
-func (c *ProjectsController) Read(id string, ctx context.Context) error {
+func (c *ProjController) Read(id string, ctx context.Context) error {
 	_, isLoggedIn := IsLoggedIn(ctx)
 	if !isLoggedIn {
 		return goweb.Respond.WithStatus(ctx, http.StatusUnauthorized)

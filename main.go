@@ -7,12 +7,12 @@ import (
 	"strconv"
 
 	// "github.com/marconi/devfeed/chat"
+	log "github.com/cihub/seelog"
+	"github.com/eknkc/amber"
 	"github.com/marconi/devfeed/controllers"
 	"github.com/marconi/devfeed/core"
 	"github.com/marconi/devfeed/db"
 	"github.com/marconi/devfeed/libs/pivotal"
-	log "github.com/cihub/seelog"
-	"github.com/eknkc/amber"
 	"github.com/stretchr/goweb"
 	"github.com/stretchr/goweb/context"
 )
@@ -434,7 +434,8 @@ func main() {
 	goweb.Map("GET", "/settings/pivotal", loggedin_only)
 
 	// map controllers
-	if err := goweb.MapController("api/projects", new(controllers.ProjectsController)); err != nil {
+	err := goweb.MapController("api/projects", new(controllers.ProjController))
+	if err != nil {
 		panic(err)
 	}
 
@@ -444,7 +445,7 @@ func main() {
 	// run the server
 	addr := fmt.Sprintf(":%s", strconv.Itoa(core.Config.App.Port))
 	log.Info("Running at: ", addr)
-	err := http.ListenAndServe(addr, goweb.DefaultHttpHandler())
+	err = http.ListenAndServe(addr, goweb.DefaultHttpHandler())
 	if err != nil {
 		panic(err)
 	}
