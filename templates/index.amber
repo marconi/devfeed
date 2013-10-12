@@ -21,7 +21,6 @@ html
     script[type="text/javascript"]
       var CONFIG = {
         baseUrl: "#{Request.Host}",
-        projChanName: "footy-sprofila",
         wsDebug: true
       };
 
