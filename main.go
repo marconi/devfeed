@@ -36,7 +36,7 @@ func index(ctx context.Context) error {
 	// compile template
 	t, err := amber.CompileFile(
 		"templates/index.amber",
-		amber.Options{true, false},
+		amber.Options{core.Config.App.Debug, false},
 	)
 	if err != nil {
 		panic(err)
@@ -55,11 +55,13 @@ func index(ctx context.Context) error {
 		Flashes  []interface{}
 		User     *db.User
 		Projects []*pivotal.Project
+		Debug    bool
 	}{
 		r,
 		session.Flashes(),
 		user,
 		projects,
+		core.Config.App.Debug,
 	}
 	if err = session.Save(r, rw); err != nil {
 		log.Error("Unable to save session: ", err)

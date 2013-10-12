@@ -29,5 +29,7 @@ html
       script[type="text/javascript"]#projects-data
         var Projects = #{Projects}
 
-    // script[type="text/javascript"][src="/static/js/main.build.js"]
-    script[type="text/javascript"][src="/static/js/vendors/require.js"][data-main="/static/js/main"]
+    if Debug
+      script[type="text/javascript"][src="/static/js/vendors/require.js"][data-main="/static/js/main"]
+    else
+      script[type="text/javascript"][src="/static/js/main.built.js"]
