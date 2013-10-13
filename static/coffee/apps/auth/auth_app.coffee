@@ -1,14 +1,12 @@
 define [
   "devfeed",
   "login_controller",
-  "logout_controller",
   "register_controller",
   "activation_controller",
   "password_controller"
 ], (
   Devfeed,
   LoginController,
-  LogoutController,
   RegisterController,
   ActivationController,
   PasswordController
@@ -26,8 +24,6 @@ define [
     API =
       showLogin: ->
         LoginController.showLogin()
-      logout: ->
-        LogoutController.logout()
       showRegister: ->
         RegisterController.showRegister()
       showActivation: ->
@@ -38,9 +34,6 @@ define [
     Devfeed.on "auth:login:show", ->
       Devfeed.navigate("login")
       API.showLogin()
-
-    Devfeed.on "auth:logout", ->
-      API.logout()
 
     Devfeed.on "auth:register:show", ->
       Devfeed.navigate("register")

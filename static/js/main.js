@@ -31,7 +31,6 @@
       auth_app: "apps/auth/auth_app",
       login_controller: "apps/auth/login/login_controller",
       login_view: "apps/auth/login/login_view",
-      logout_controller: "apps/auth/logout/logout_controller",
       register_controller: "apps/auth/register/register_controller",
       register_view: "apps/auth/register/register_view",
       activation_controller: "apps/auth/activation/activation_controller",

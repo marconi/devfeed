@@ -3,7 +3,7 @@
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define(["devfeed", "login_controller", "logout_controller", "register_controller", "activation_controller", "password_controller"], function(Devfeed, LoginController, LogoutController, RegisterController, ActivationController, PasswordController) {
+  define(["devfeed", "login_controller", "register_controller", "activation_controller", "password_controller"], function(Devfeed, LoginController, RegisterController, ActivationController, PasswordController) {
     Devfeed.module("AuthApp", function(AuthApp, Devfeed, Backbone, Marionette, $, _) {
       var API, _ref;
       AuthApp.Router = (function(_super) {
@@ -28,9 +28,6 @@
         showLogin: function() {
           return LoginController.showLogin();
         },
-        logout: function() {
-          return LogoutController.logout();
-        },
         showRegister: function() {
           return RegisterController.showRegister();
         },
@@ -44,9 +41,6 @@
       Devfeed.on("auth:login:show", function() {
         Devfeed.navigate("login");
         return API.showLogin();
-      });
-      Devfeed.on("auth:logout", function() {
-        return API.logout();
       });
       Devfeed.on("auth:register:show", function() {
         Devfeed.navigate("register");

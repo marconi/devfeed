@@ -147,18 +147,6 @@
           return defer.promise();
         };
 
-        UserSession.prototype.logout = function() {
-          $.ajax({
-            async: false,
-            type: "GET",
-            url: "/logout"
-          });
-          this.set("sessionId", null);
-          this.set("name", null);
-          this.set("email", null);
-          return this.set("password", null);
-        };
-
         UserSession.prototype.register = function(name, email, password) {
           var defer,
             _this = this;
@@ -354,9 +342,6 @@
         }
         userSession.resetValidationRules();
         return userSession.login(email, password);
-      });
-      Devfeed.reqres.setHandler("session:logout", function() {
-        return userSession.logout();
       });
       Devfeed.reqres.setHandler("session:register", function(name, email, password) {
         var defer;

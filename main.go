@@ -187,20 +187,15 @@ func register(ctx context.Context) error {
 // Logout the user by clearing user session
 func logout(ctx context.Context) error {
 	r := ctx.HttpRequest()
-	session, err := core.GetSession(r)
-	if err != nil {
-		log.Error("No session found: ", err)
-		return goweb.Respond.WithStatus(ctx, http.StatusInternalServerError)
-	}
-
+	session, _ := core.GetSession(r)
 	_, ok := session.Values["user"]
 	if ok {
 		delete(session.Values, "user")
-		if err = session.Save(r, ctx.HttpResponseWriter()); err != nil {
+		if err := session.Save(r, ctx.HttpResponseWriter()); err != nil {
 			log.Error("Unable to save session: ", err)
 		}
 	}
-	return nil
+	return goweb.Respond.WithPermanentRedirect(ctx, "/")
 }
 
 // Checks if current request has a loggedin user

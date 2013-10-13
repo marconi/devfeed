@@ -23,16 +23,11 @@ define [
       id: "userinfo"
       template: userinfoTpl
       events:
-        "click .logout a": "logoutClicked"
         "click .settings a": "settingsClicked"
 
       settingsClicked: (e) ->
         e.preventDefault()
         Devfeed.trigger("settings:general")
         @$("#user-name").click()
-
-      logoutClicked: (e) ->
-        e.preventDefault()
-        Devfeed.trigger("auth:logout")
 
   return Devfeed.HeaderApp.Common.View

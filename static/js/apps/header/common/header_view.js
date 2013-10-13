@@ -49,7 +49,6 @@
         UserinfoView.prototype.template = userinfoTpl;
 
         UserinfoView.prototype.events = {
-          "click .logout a": "logoutClicked",
           "click .settings a": "settingsClicked"
         };
 
@@ -57,11 +56,6 @@
           e.preventDefault();
           Devfeed.trigger("settings:general");
           return this.$("#user-name").click();
-        };
-
-        UserinfoView.prototype.logoutClicked = function(e) {
-          e.preventDefault();
-          return Devfeed.trigger("auth:logout");
         };
 
         return UserinfoView;

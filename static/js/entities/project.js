@@ -75,9 +75,11 @@
           defer = $.Deferred();
           if (projects.length === 0) {
             projects.fetch({
-              reset: true,
               success: function(collection, response, options) {
-                return defer.resolve(collection);
+                if (response.s === 200) {
+                  projects.reset(response.d);
+                }
+                return defer.resolve(projects);
               },
               error: function(collection, response, options) {
                 return defer.resolve(null);

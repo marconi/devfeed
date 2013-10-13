@@ -93,16 +93,6 @@ define ["devfeed", "validation"], (Devfeed, Validation) ->
             @set password: null
         return defer.promise()
 
-      logout: ->
-        $.ajax
-          async: false
-          type: "GET"
-          url: "/logout"
-        @set("sessionId", null)
-        @set("name", null)
-        @set("email", null)
-        @set("password", null)
-
       register: (name, email, password) ->
         defer = $.Deferred()
         $.ajax
@@ -214,9 +204,6 @@ define ["devfeed", "validation"], (Devfeed, Validation) ->
         return defer.promise()
       userSession.resetValidationRules()
       return userSession.login(email, password)
-
-    Devfeed.reqres.setHandler "session:logout", ->
-      userSession.logout()
 
     Devfeed.reqres.setHandler "session:register", (name, email, password) ->
       userSession.validateName = true

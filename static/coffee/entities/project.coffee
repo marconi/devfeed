@@ -36,9 +36,10 @@ define ["devfeed"], (Devfeed) ->
         defer = $.Deferred()
         if projects.length == 0
           projects.fetch
-            reset: true
             success: (collection, response, options) ->
-              defer.resolve collection
+              if response.s == 200
+                projects.reset response.d
+              defer.resolve projects
             error: (collection, response, options) ->
               defer.resolve null
         else
