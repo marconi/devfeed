@@ -18,6 +18,7 @@
       validation: "vendors/backbone.validation",
       tpl: "vendors/tpl",
       notification: "vendors/mininotification",
+      golem: "vendors/golem",
       foundation: "vendors/foundation/foundation",
       foundation_dropdown: "vendors/foundation/foundation.dropdown",
       foundation_alerts: "vendors/foundation/foundation.alerts",
@@ -27,6 +28,7 @@
       user_session: "entities/user_session",
       alert: "entities/alert",
       project: "entities/project",
+      websocket: "entities/websocket",
       common_view: "apps/common/common_view",
       auth_app: "apps/auth/auth_app",
       login_controller: "apps/auth/login/login_controller",
@@ -76,6 +78,9 @@
       notification: {
         deps: ["jquery"]
       },
+      websocket: {
+        deps: ["jquery", "golem"]
+      },
       foundation: {
         deps: ["jquery"]
       },
@@ -97,7 +102,7 @@
     }
   });
 
-  define(["devfeed", "utils", "user_session", "header_app", "auth_app", "project_app", "settings_app"], function(Devfeed) {
+  define(["devfeed", "utils", "websocket", "user_session", "header_app", "auth_app", "project_app", "settings_app"], function(Devfeed) {
     return Devfeed.start();
   });
 

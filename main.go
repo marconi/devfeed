@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"strconv"
 
-	// "github.com/marconi/devfeed/chat"
 	log "github.com/cihub/seelog"
 	"github.com/eknkc/amber"
+	"github.com/marconi/devfeed/chat"
 	"github.com/marconi/devfeed/controllers"
 	"github.com/marconi/devfeed/core"
 	"github.com/marconi/devfeed/db"
@@ -20,7 +20,7 @@ func init() {
 	core.LoadConfig()
 	core.InitMongo()
 	core.InitSessionStore(new(db.User))
-	// chat.InitChatHandler()
+	chat.InitChatHandler()
 }
 
 func index(ctx context.Context) error {

@@ -5,6 +5,8 @@ import (
 	// "net/http"
 	"sync"
 
+	"github.com/stretchr/goweb"
+	"github.com/stretchr/goweb/context"
 	"github.com/trevex/golem"
 )
 
@@ -58,7 +60,11 @@ func InitChatHandler() {
 		log.Println(room.Name, "members:", count)
 	})
 
-	// web.Handler("/ws", "GET", http.HandlerFunc(router.Handler()))
+	goweb.Map("/ws", func(ctx context.Context) error {
+		handler := router.Handler()
+		handler(ctx.HttpResponseWriter(), ctx.HttpRequest())
+		return nil
+	})
 }
 
 func (ch *WebsocketHandler) Subscribe(conn *golem.Connection, data *Subscribe) {

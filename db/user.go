@@ -248,6 +248,9 @@ func (u *User) SyncProjects() error {
 			}
 		}
 	}
+
+	// TODO: fetch tasks on each story of each projects
+
 	return nil
 }
 

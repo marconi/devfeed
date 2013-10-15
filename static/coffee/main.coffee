@@ -21,6 +21,7 @@ require.config
     validation: "vendors/backbone.validation"
     tpl: "vendors/tpl"
     notification: "vendors/mininotification"
+    golem: "vendors/golem"
 
     # foundation
     foundation: "vendors/foundation/foundation"
@@ -38,6 +39,7 @@ require.config
     user_session: "entities/user_session"
     alert: "entities/alert"
     project: "entities/project"
+    websocket: "entities/websocket"
 
     # common app
     common_view: "apps/common/common_view"
@@ -89,6 +91,8 @@ require.config
       deps: ["backbone"]
     notification:
       deps: ["jquery"]
+    websocket:
+      deps: ["jquery", "golem"]
 
     # foundation
     foundation:
@@ -111,6 +115,7 @@ require.config
 define [
   "devfeed",
   "utils",
+  "websocket",
   "user_session",
   "header_app",
   "auth_app",
