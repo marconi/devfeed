@@ -2,17 +2,19 @@ package db
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"text/template"
 	"time"
 
-	"github.com/marconi/devfeed/core"
-	"github.com/marconi/devfeed/libs/pivotal"
-	"github.com/marconi/devfeed/utils"
 	"code.google.com/p/go.crypto/bcrypt"
 	log "github.com/cihub/seelog"
 	"github.com/dchest/uniuri"
+	"github.com/marconi/devfeed/core"
+	"github.com/marconi/devfeed/libs/pivotal"
+	"github.com/marconi/devfeed/utils"
 	"labix.org/v2/mgo/bson"
 )
 
@@ -24,13 +26,7 @@ type User struct {
 	IsActive      bool
 	ActivationKey string
 	Created       time.Time
-	Person        struct {
-		Id       int
-		Initials string
-		Email    string
-		ApiToken string
-		Timezone *pivotal.Timezone
-	}
+	Person        *pivotal.Me
 }
 
 func NewInactiveUser(name, email, password string) (*User, error) {
@@ -47,6 +43,7 @@ func NewInactiveUser(name, email, password string) (*User, error) {
 		IsActive:      false,
 		ActivationKey: utils.GenerateKey(email),
 		Created:       time.Now().UTC(),
+		Person:        new(pivotal.Me),
 	}, nil
 }
 
@@ -202,22 +199,15 @@ func (u *User) Update(name, email, password, apitoken string) (map[string]string
 			log.Error("Unable to get me: ", err)
 			errs["apitoken"] = "Invalid API Token"
 		} else {
-			// pick some personal fields to store on our user
-			u.Person.Id = me.Id
-			u.Person.Initials = me.Initials
-			u.Person.Email = me.Email
-			u.Person.Timezone = me.Timezone
-
-			// save the projects
-			if err = SaveProjects(me.GetProjects()); err != nil {
-				log.Error("Unable to save projects: ", err)
-			}
-
-			// save the project memberships
-			if err = SaveMemberships(me.GetMemberships()); err != nil {
-				log.Error("Unable to save project memberships: ", err)
-			}
+			u.Person = me
 			u.Person.ApiToken = apitoken
+
+			// sync projects
+			go func() {
+				if err := u.SyncProjects(); err != nil {
+					log.Error("Error syncing projects: ", err)
+				}
+			}()
 		}
 	}
 
@@ -233,7 +223,83 @@ func (u *User) Update(name, email, password, apitoken string) (map[string]string
 	return nil, nil
 }
 
-func (u *User) GetProjects() ([]*pivotal.Project, error) {
+func (u *User) SyncProjects() error {
+	// fetch projects
+	projects, err := u.FetchProjects()
+	if err != nil {
+		return errors.New(fmt.Sprintf("Unable to fetch projects: %s", err))
+	}
+
+	// build project memberships
+	if err = u.BuildProjMemberships(); err != nil {
+		return errors.New(fmt.Sprintf("Unable to build project memberships: %s", err))
+	}
+
+	// fetch stories of each project
+	c := core.Db.C("projects")
+	for _, proj := range projects {
+		if err = proj.FetchStories(u.Person.ApiToken); err != nil {
+			log.Error("Unable to fetch stories of project ", proj.Id, " : ", err)
+		} else {
+			// mark project as synced
+			proj.IsSynced = true
+			if err := c.Update(bson.M{"project.id": proj.Id}, proj); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func (u *User) BuildProjMemberships() error {
+	c := core.Db.C("memberships")
+	for _, memsumm := range u.Person.Projects {
+		projMem := &ProjectMembership{
+			Id:        memsumm.Id,
+			ProjectId: memsumm.ProjectId,
+			PersonId:  u.Person.Id,
+		}
+		_, err := c.Upsert(bson.M{"id": projMem.Id}, projMem)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (u *User) FetchProjects() ([]*Project, error) {
+	res, err := pivotal.Request("projects", "GET", u.Person.ApiToken)
+	if err != nil {
+		return nil, err
+	}
+
+	defer res.Body.Close()
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	if res.StatusCode != 200 {
+		reqError := new(pivotal.Error)
+		json.Unmarshal(body, &reqError)
+		return nil, errors.New(reqError.Error)
+	}
+
+	var projects []*Project
+	json.Unmarshal(body, &projects)
+
+	// save projects
+	c := core.Db.C("projects")
+	for _, proj := range projects {
+		_, err := c.Upsert(bson.M{"project.id": proj.Id}, proj)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return projects, nil
+}
+
+func (u *User) GetProjects() ([]*Project, error) {
 	// get all project ids
 	var projectIds []struct {
 		ProjectId int `json:"projectid"`
@@ -252,9 +318,9 @@ func (u *User) GetProjects() ([]*pivotal.Project, error) {
 		}
 
 		// get all projects
-		var projects []*pivotal.Project
+		var projects []*Project
 		pc := core.Db.C("projects")
-		err = pc.Find(bson.M{"id": bson.M{"$in": projIds}}).All(&projects)
+		err = pc.Find(bson.M{"project.id": bson.M{"$in": projIds}}).All(&projects)
 		if err != nil {
 			return nil, err
 		}

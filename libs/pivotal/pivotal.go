@@ -6,6 +6,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
+	"time"
+
+	log "github.com/cihub/seelog"
 )
 
 var baseUrl = "https://www.pivotaltracker.com/services/v5"
@@ -15,34 +19,90 @@ type Error struct {
 	Code  string `json:"code"`
 }
 
-type Project struct {
-	Id   int    `json:"id"`
-	Name string `json:"name"`
-}
-
-type ProjectMembership struct {
-	Id        int `json:"id"`
-	ProjectId int `json:"project_id"`
-	PersonId  int `json:"person_id"`
-}
-
-type MembershipSummary struct {
-	Id          int    `json:"id"`
-	ProjectId   int    `json:"project_id"`
-	ProjectName string `json:"project_name"`
-}
-
-// get the project from summary
-func (ms *MembershipSummary) GetProject() *Project {
-	return &Project{
-		Id:   ms.ProjectId,
-		Name: ms.ProjectName,
-	}
-}
-
 type Timezone struct {
 	OlsonName string `json:"olson_name"`
 	Offset    string `json:"offset"`
+}
+
+type Project struct {
+	Id       int       `json:"id"`
+	Name     string    `json:"name"`
+	TimeZone *Timezone `json:"time_zone"`
+
+	// NOTE: unused pivotal fields
+	// IterationLength              int        `json:"iteration_length"`
+	// EnabledPlannedMode           bool       `json:"enabled_planned_mode"`
+	// CurrentIterationNumber       int        `json:"current_iteration_number"`
+	// CreatedAt                    *time.Time `json:"created_at"`
+	// UpdatedAt                    *time.Time `json:"updated_at"`
+	// PointScaleIsCustom           bool       `json:"point_scale_is_custom"`
+	// Public                       bool       `json:"public"`
+	// AccountId                    int        `json:"account_id"`
+	// MembershipIds                []int      `json:"membership_ids"`
+	// LabelIds                     []int      `json:"label_ids"`
+	// EnableTasks                  bool       `json:"enable_tasks"`
+	// Description                  string     `json:"description"`
+	// InitialVelocity              int        `json:"initial_velocity"`
+	// Version                      int        `json:"version"`
+	// VelocityAveragedOver         int        `json:"velocity_averaged_over"`
+	// NumberOfDoneIterationsToSHow int        `json:"number_of_done_iterations_to_show"`
+	// EnableIncomingEmails         bool       `json:"enable_incoming_emails"`
+	// AtomEnabled                  bool       `json:"atom_enabled"`
+	// CurrentVelocity              int        `json:"current_velocity"`
+	// PointScale                   string     `json:"point_scale"`
+	// IntegrationIds               []int      `json:"integration_ids"`
+	// BugsAndChoresAreEstimatable  bool       `json:"bugs_and_chores_are_estimatable"`
+	// StartTime                    *time.Time `json:"start_time"`
+	// EpicIds                      []int      `json:"epic_ids"`
+	// ShowIterationsStartTime      *time.Time `json:"show_iterations_start_time"`
+	// ProfileContent               string     `json:"profile_content"`
+	// IterationOverrideNumbers     []int      `json:"iteration_override_numbers"`
+	// WeekStartDay                 string     `json:"week_start_day"`
+	// StartDate                    *time.Time `json:"start_date"`
+	// HasGoogleDomain              bool       `json:"has_google_domain"`
+	// StoryIds                     []int      `json:"story_ids"`
+}
+
+// return paginated stories, total stories or an error if there's any
+func (p *Project) GetStories(token string, offset, limit int) ([]*Story, int, error) {
+	url := fmt.Sprintf("projects/%d/stories?offset=%d&limit=%d", p.Id, offset, limit)
+	res, err := Request(url, "GET", token)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	defer res.Body.Close()
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	if res.StatusCode != 200 {
+		reqError := new(Error)
+		json.Unmarshal(body, &reqError)
+		return nil, 0, errors.New(reqError.Error)
+	}
+
+	total := 0
+	totalHeader, ok := res.Header["X-Tracker-Pagination-Total"]
+	if ok {
+		total, err = strconv.Atoi(totalHeader[0])
+		if err != nil {
+			return nil, 0, err
+		}
+	}
+
+	var stories []*Story
+	json.Unmarshal(body, &stories)
+
+	log.Info("Fetching stories, project: ", p.Id, " offset: ", offset, " limit: ", limit, " total: ", len(stories))
+	return stories, total, nil
+}
+
+type membershipsummary struct {
+	Id          int    `json:"id"`
+	ProjectId   int    `json:"project_id"`
+	ProjectName string `json:"project_name"`
 }
 
 type Me struct {
@@ -51,31 +111,32 @@ type Me struct {
 	Initials string               `json:"initials"`
 	Email    string               `json:"email"`
 	ApiToken string               `json:"api_token"`
-	Timezone *Timezone            `json:"time_zone"`
-	Projects []*MembershipSummary `json:"projects"`
+	TimeZone *Timezone            `json:"time_zone"`
+	Projects []*membershipsummary `json:"projects"`
 }
 
-// get all projects based on membership summary's projects
-func (me *Me) GetProjects() []*Project {
-	var projects []*Project
-	for _, memSummary := range me.Projects {
-		projects = append(projects, memSummary.GetProject())
-	}
-	return projects
-}
-
-// get all memberships based on membership summary's projects
-func (me *Me) GetMemberships() []*ProjectMembership {
-	var memberships []*ProjectMembership
-	for _, memSummary := range me.Projects {
-		membership := &ProjectMembership{
-			Id:        memSummary.Id,
-			ProjectId: memSummary.ProjectId,
-			PersonId:  me.Id,
-		}
-		memberships = append(memberships, membership)
-	}
-	return memberships
+type Story struct {
+	Id                     int        `json:"id"`
+	ProjectId              int        `json:"project_id"`
+	FollowerIds            []int      `json:"follower_ids"`
+	UpdatedAt              *time.Time `json:"udpated_at"`
+	CurrentState           string     `json:"current_state"` // accepted, delivered, finished, started, rejected, unstarted, unscheduled
+	Name                   string     `json:"name"`
+	CommentIds             []int      `json:"comment_ids"`
+	Url                    string     `json:"url"`
+	StoryType              string     `json:"story_type"` // feature, bug, chore, release
+	LabelIds               []int      `json:"label_ids"`
+	Description            string     `json:"description"`
+	RequestedById          int        `json:"requested_by_id"`
+	PlannedIterationNumber int        `json:"planned_iteration_number"`
+	ExternalId             string     `json:"external_id"`
+	Deadline               *time.Time `json:"deadline"`
+	OwnedById              int        `json:"owned_by_id"`
+	CreatedAt              *time.Time `json:"created_at"`
+	Estimate               float64    `json:"estimate"`
+	TaskIds                []int      `json:"task_ids"`
+	IntegrationId          int        `json:"integration_id"`
+	AcceptedAt             *time.Time `json:"accepted_at"`
 }
 
 func Request(uri, method, token string) (*http.Response, error) {

@@ -19,7 +19,13 @@ define [
 
       projectClicked: (e) ->
         e.preventDefault()
-        Devfeed.trigger("project:show", @model.get("id"))
+        if @model.get("issynced")
+          Devfeed.trigger("project:show", @model.get("id"))
+
+      onRender: ->
+        if not @model.get("issynced")
+          @$(".syncing").html("&nbsp;").spin
+            lines: 8, length: 3, width: 3, radius: 4, color: "#9ea7b3"
 
     class View.List extends Marionette.CompositeView
       id: "project-list"

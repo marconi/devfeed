@@ -15,7 +15,6 @@ define [
 
         loadingProjects = Devfeed.request("project:entities")
         $.when(loadingProjects).done (projects) ->
-          # console.log projects
           projectListView = new ProjectListView.List
             collection: projects
           Devfeed.contentRegion.show(projectListView)

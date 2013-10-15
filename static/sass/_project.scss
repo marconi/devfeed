@@ -52,6 +52,29 @@
             color: $aqua;
           }
         }
+
+        &.disabled {
+          i {
+            margin: 0;
+
+            > .spinner {
+              left: -5px !important;
+              top: 12px !important;
+            }
+          }
+        }
+
+        &.disabled:hover {
+          background: none;
+          border-left: 0;
+          padding-left: 20px;
+          color: $violetBlue;
+          cursor: default;
+
+          i {
+            color: $lightBlue;          
+          }
+        }
       }
     }
 

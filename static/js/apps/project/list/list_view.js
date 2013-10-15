@@ -39,7 +39,21 @@
 
         Project.prototype.projectClicked = function(e) {
           e.preventDefault();
-          return Devfeed.trigger("project:show", this.model.get("id"));
+          if (this.model.get("issynced")) {
+            return Devfeed.trigger("project:show", this.model.get("id"));
+          }
+        };
+
+        Project.prototype.onRender = function() {
+          if (!this.model.get("issynced")) {
+            return this.$(".syncing").html("&nbsp;").spin({
+              lines: 8,
+              length: 3,
+              width: 3,
+              radius: 4,
+              color: "#9ea7b3"
+            });
+          }
         };
 
         return Project;

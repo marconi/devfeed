@@ -17,7 +17,8 @@
 
         Project.prototype.defaults = {
           id: null,
-          name: null
+          name: null,
+          issynced: false
         };
 
         Project.prototype.urlRoot = "/api/projects";

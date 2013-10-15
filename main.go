@@ -12,7 +12,6 @@ import (
 	"github.com/marconi/devfeed/controllers"
 	"github.com/marconi/devfeed/core"
 	"github.com/marconi/devfeed/db"
-	"github.com/marconi/devfeed/libs/pivotal"
 	"github.com/stretchr/goweb"
 	"github.com/stretchr/goweb/context"
 )
@@ -43,7 +42,7 @@ func index(ctx context.Context) error {
 	}
 
 	user, isLoggedIn := controllers.IsLoggedIn(ctx)
-	var projects []*pivotal.Project
+	var projects []*db.Project
 	if isLoggedIn {
 		projects, err = user.GetProjects()
 		if err != nil {
@@ -54,7 +53,7 @@ func index(ctx context.Context) error {
 		Request  *http.Request
 		Flashes  []interface{}
 		User     *db.User
-		Projects []*pivotal.Project
+		Projects []*db.Project
 		Debug    bool
 	}{
 		r,

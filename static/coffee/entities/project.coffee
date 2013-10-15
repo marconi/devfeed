@@ -8,6 +8,7 @@ define ["devfeed"], (Devfeed) ->
       defaults:
         id: null
         name: null
+        issynced: false
       urlRoot: "/api/projects"
       parse: (response, options) ->
         if response.s == 200
