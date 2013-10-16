@@ -26,11 +26,7 @@ func init() {
 func index(ctx context.Context) error {
 	r := ctx.HttpRequest()
 	rw := ctx.HttpResponseWriter()
-	session, err := core.GetSession(r)
-	if err != nil {
-		log.Error("No session found: ", err)
-		return goweb.Respond.WithStatus(ctx, http.StatusInternalServerError)
-	}
+	session, _ := core.GetSession(r)
 
 	// compile template
 	t, err := amber.CompileFile(
@@ -86,11 +82,7 @@ func anonymous_only(ctx context.Context) error {
 func login(ctx context.Context) error {
 	r := ctx.HttpRequest()
 	rw := ctx.HttpResponseWriter()
-	session, err := core.GetSession(r)
-	if err != nil {
-		log.Error("No session found: ", err)
-		return goweb.Respond.WithStatus(ctx, http.StatusInternalServerError)
-	}
+	session, _ := core.GetSession(r)
 
 	email := ctx.PostValue("email")
 	password := ctx.PostValue("password")
@@ -138,13 +130,7 @@ func login(ctx context.Context) error {
 
 // Validate register credential and save it
 func register(ctx context.Context) error {
-	r := ctx.HttpRequest()
 	rw := ctx.HttpResponseWriter()
-	_, err := core.GetSession(r)
-	if err != nil {
-		log.Error("No session found: ", err)
-		return goweb.Respond.WithStatus(ctx, http.StatusInternalServerError)
-	}
 
 	name := ctx.PostValue("name")
 	email := ctx.PostValue("email")
@@ -201,11 +187,7 @@ func logout(ctx context.Context) error {
 func isloggedin(ctx context.Context) error {
 	user, ok := controllers.IsLoggedIn(ctx)
 	if ok {
-		session, err := core.GetSession(ctx.HttpRequest())
-		if err != nil {
-			log.Error("No session found: ", err)
-			return goweb.Respond.WithStatus(ctx, http.StatusInternalServerError)
-		}
+		session, _ := core.GetSession(ctx.HttpRequest())
 		userInfo := struct {
 			SessionID string `json:"sessionid"`
 			Name      string `json:"name"`
@@ -232,21 +214,17 @@ func isloggedin(ctx context.Context) error {
 func activate(ctx context.Context) error {
 	r := ctx.HttpRequest()
 	key := ctx.PathValue("key")
-	session, err := core.GetSession(r)
-	if err != nil {
-		log.Error("No session found: ", err)
-		return goweb.Respond.WithStatus(ctx, http.StatusInternalServerError)
-	}
+	session, _ := core.GetSession(r)
 
 	if user := db.GetInactiveUserByKey(key); user != nil {
-		if err = user.Activate(); err != nil {
+		if err := user.Activate(); err != nil {
 			log.Error("Error activating user: ", err)
 		}
 		session.AddFlash("Activated! you can now login using your account")
 	} else {
 		session.AddFlash("Your activation key is used or has already expired")
 	}
-	if err = session.Save(r, ctx.HttpResponseWriter()); err != nil {
+	if err := session.Save(r, ctx.HttpResponseWriter()); err != nil {
 		log.Error("Unable to save session: ", err)
 	}
 	return goweb.Respond.WithPermanentRedirect(ctx, "/")
@@ -311,11 +289,7 @@ func retrieve(ctx context.Context) error {
 func settingsUpdate(ctx context.Context) error {
 	r := ctx.HttpRequest()
 	rw := ctx.HttpResponseWriter()
-	session, err := core.GetSession(r)
-	if err != nil {
-		log.Error("No session found: ", err)
-		return goweb.Respond.WithStatus(ctx, http.StatusInternalServerError)
-	}
+	session, _ := core.GetSession(r)
 
 	name := ctx.PostValue("name")
 	email := ctx.PostValue("email")

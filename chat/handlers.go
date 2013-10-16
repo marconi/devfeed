@@ -1,7 +1,7 @@
 package chat
 
 import (
-	"log"
+	// "log"
 	// "net/http"
 	"sync"
 
@@ -54,11 +54,11 @@ type WebsocketHandler struct{}
 
 func InitChatHandler() {
 	router := golem.NewRouter()
-	router.On("subscribe", ChatHandler.Subscribe)
-	router.OnClose(func(conn *golem.Connection) {
-		room, count := ChatRooms.Remove(conn)
-		log.Println(room.Name, "members:", count)
-	})
+	// router.On("subscribe", ChatHandler.Subscribe)
+	// router.OnClose(func(conn *golem.Connection) {
+	// 	room, count := ChatRooms.Remove(conn)
+	// 	log.Println(room.Name, "members:", count)
+	// })
 
 	goweb.Map("/ws", func(ctx context.Context) error {
 		handler := router.Handler()
@@ -67,7 +67,7 @@ func InitChatHandler() {
 	})
 }
 
-func (ch *WebsocketHandler) Subscribe(conn *golem.Connection, data *Subscribe) {
-	count := ChatRooms.Add(data.Channel, conn)
-	log.Println(data.Channel, "members:", count)
-}
+// func (ch *WebsocketHandler) Subscribe(conn *golem.Connection, data *Subscribe) {
+// 	count := ChatRooms.Add(data.Channel, conn)
+// 	log.Println(data.Channel, "members:", count)
+// }

@@ -1,4 +1,4 @@
-define ["devfeed", "login_view"], (Devfeed, LoginView) ->
+define ["devfeed", "login_view", "websocket"], (Devfeed, LoginView, WebSocket) ->
 
   Devfeed.module "AuthApp.Login", (Login, Devfeed, Backbone, Marionette, $, _) ->
 
@@ -11,6 +11,7 @@ define ["devfeed", "login_view"], (Devfeed, LoginView) ->
             if result and result.errors?
               loginView.triggerMethod("form:data:invalid", result)
             else
+              Devfeed.execute("websocket:create")
               Devfeed.execute("show:userinfo")
               Devfeed.trigger("projects:list")
         Devfeed.contentRegion.show(loginView)

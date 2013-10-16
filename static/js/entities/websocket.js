@@ -4,6 +4,7 @@
 
   define(["devfeed", "golem"], function(Devfeed, Golem) {
     Devfeed.module("Entities", function(Entities, Devfeed, Backbone, Marionette, $, _) {
+      var API, websocket;
       Entities.WebSocket = (function() {
         function WebSocket() {
           this.message = __bind(this.message, this);
@@ -13,11 +14,7 @@
           this.WsConn.on("message", this.message);
         }
 
-        WebSocket.prototype.open = function() {
-          return this.WsConn.emit("subscribe", {
-            channel: CONFIG.projChanName
-          });
-        };
+        WebSocket.prototype.open = function() {};
 
         WebSocket.prototype.message = function(data) {
           return console.log(data);
@@ -26,8 +23,25 @@
         return WebSocket;
 
       })();
-      return Devfeed.addInitializer(function() {
-        return window.ws = new Entities.WebSocket();
+      websocket = null;
+      API = {
+        createWebSocket: function() {
+          if (!websocket) {
+            return websocket = new Entities.WebSocket();
+          }
+        },
+        getWebSocket: function() {
+          return websocket;
+        }
+      };
+      Devfeed.on("loggedin", function() {
+        return API.createWebSocket();
+      });
+      Devfeed.reqres.setHandler("websocket:entity", function() {
+        return API.getWebSocket();
+      });
+      return Devfeed.commands.setHandler("websocket:create", function() {
+        return API.createWebSocket();
       });
     });
     return Devfeed.Entities.WebSocket;

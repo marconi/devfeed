@@ -92,7 +92,12 @@
                 }
               },
               complete: function() {
-                return defer.resolve(Boolean(_this.get('sessionId')));
+                var isLoggedIn;
+                isLoggedIn = Boolean(_this.get('sessionId'));
+                if (isLoggedIn) {
+                  Devfeed.trigger("loggedin");
+                }
+                return defer.resolve(isLoggedIn);
               }
             });
           } else {

@@ -58,7 +58,12 @@ define ["devfeed", "validation"], (Devfeed, Validation) ->
                 @set("email", data.email)
                 @set("apitoken", data.apitoken)
             complete: =>
-              defer.resolve Boolean(@get('sessionId'))
+              isLoggedIn = Boolean(@get('sessionId'))
+              if isLoggedIn
+                # triger loggedin event so any listener like
+                # creating websocket can react
+                Devfeed.trigger("loggedin")
+              defer.resolve isLoggedIn
         else
           defer.resolve Boolean(@get('sessionId'))
         return defer.promise()
