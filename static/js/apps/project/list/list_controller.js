@@ -2,7 +2,7 @@
 (function() {
   define(["devfeed", "common_view", "project", "project_list_view"], function(Devfeed, CommonView, Proj, ProjectListView) {
     Devfeed.module("ProjectApp.List", function(List, Devfeed, Backbone, Marionette, $, _) {
-      return List.Controller = {
+      List.Controller = {
         listProjects: function() {
           var loadingProjects, preloaderView;
           preloaderView = new CommonView.Preloader();
@@ -17,6 +17,15 @@
           });
         }
       };
+      return Devfeed.on("project:synced", function(id) {
+        var loadingProjects;
+        loadingProjects = Devfeed.request("project:entities");
+        return $.when(loadingProjects).done(function(projects) {
+          var project;
+          project = projects.get(id);
+          return project.set("issynced", true);
+        });
+      });
     });
     return Devfeed.ProjectApp.List.Controller;
   });

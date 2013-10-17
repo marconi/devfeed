@@ -16,7 +16,9 @@ define [
       template: projectTpl
       events:
         "click a": "projectClicked"
-
+      modelEvents:
+        "change": "render"
+  
       projectClicked: (e) ->
         e.preventDefault()
         if @model.get("issynced")

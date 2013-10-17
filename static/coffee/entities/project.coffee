@@ -25,6 +25,8 @@ define ["devfeed"], (Devfeed) ->
 
     API =
       getProject: (id) ->
+        # fetch project's stories and other info from backend,
+        # so its not enough to just use .get from projects collection.
         defer = $.Deferred()
         project = new Entities.Proj.Project id: id
         project.fetch

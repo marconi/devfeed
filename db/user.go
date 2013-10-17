@@ -14,6 +14,7 @@ import (
 	"github.com/dchest/uniuri"
 	"github.com/marconi/devfeed/core"
 	"github.com/marconi/devfeed/libs/pivotal"
+	"github.com/marconi/devfeed/libs/websocket"
 	"github.com/marconi/devfeed/utils"
 	"labix.org/v2/mgo/bson"
 )
@@ -45,6 +46,11 @@ func NewInactiveUser(name, email, password string) (*User, error) {
 		Created:       time.Now().UTC(),
 		Person:        new(pivotal.Me),
 	}, nil
+}
+
+func (u *User) GetId() string {
+	userId, _ := u.Id.MarshalJSON()
+	return string(userId)
 }
 
 func (u *User) SendActivationEmail() error {
@@ -236,6 +242,7 @@ func (u *User) SyncProjects() error {
 	}
 
 	// fetch stories of each project
+	wsConn := websocket.UserIdConnMapping[u.GetId()]
 	c := core.Db.C("projects")
 	for _, proj := range projects {
 		if err = proj.FetchStories(u.Person.ApiToken); err != nil {
@@ -246,6 +253,7 @@ func (u *User) SyncProjects() error {
 			if err := c.Update(bson.M{"project.id": proj.Id}, proj); err != nil {
 				return err
 			}
+			wsConn.Emit("project:synced", proj.Id)
 		}
 	}
 

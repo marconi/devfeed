@@ -37,6 +37,10 @@
           "click a": "projectClicked"
         };
 
+        Project.prototype.modelEvents = {
+          "change": "render"
+        };
+
         Project.prototype.projectClicked = function(e) {
           e.preventDefault();
           if (this.model.get("issynced")) {

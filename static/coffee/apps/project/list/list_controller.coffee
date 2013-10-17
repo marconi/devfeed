@@ -19,4 +19,10 @@ define [
             collection: projects
           Devfeed.contentRegion.show(projectListView)
 
+    Devfeed.on "project:synced", (id) ->
+      loadingProjects = Devfeed.request("project:entities")
+      $.when(loadingProjects).done (projects) ->
+        project = projects.get(id)
+        project.set("issynced", true)
+
   return Devfeed.ProjectApp.List.Controller

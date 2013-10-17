@@ -107,7 +107,6 @@ func login(ctx context.Context) error {
 	if err = session.Save(r, rw); err != nil {
 		log.Error("Unable to save session: ", err)
 	}
-	userId, _ := user.Id.MarshalJSON()
 	userInfo := struct {
 		SessionID string `json:"sessionid"`
 		Id        string `json:"id"`
@@ -116,7 +115,7 @@ func login(ctx context.Context) error {
 		ApiToken  string `json:"apitoken"`
 	}{
 		SessionID: session.ID,
-		Id:        string(userId),
+		Id:        user.GetId(),
 		Name:      user.Name,
 		Email:     user.Email,
 		ApiToken:  user.Person.ApiToken,
@@ -190,7 +189,6 @@ func isloggedin(ctx context.Context) error {
 	user, ok := controllers.IsLoggedIn(ctx)
 	if ok {
 		session, _ := core.GetSession(ctx.HttpRequest())
-		userId, _ := user.Id.MarshalJSON()
 		userInfo := struct {
 			SessionID string `json:"sessionid"`
 			Id        string `json:"id"`
@@ -199,7 +197,7 @@ func isloggedin(ctx context.Context) error {
 			ApiToken  string `json:"apitoken"`
 		}{
 			SessionID: session.ID,
-			Id:        string(userId),
+			Id:        user.GetId(),
 			Name:      user.Name,
 			Email:     user.Email,
 			ApiToken:  user.Person.ApiToken,

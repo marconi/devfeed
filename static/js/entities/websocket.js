@@ -7,11 +7,11 @@
       var API, websocket;
       Entities.WebSocket = (function() {
         function WebSocket() {
-          this.message = __bind(this.message, this);
+          this.projectSynced = __bind(this.projectSynced, this);
           this.open = __bind(this.open, this);
           this.WsConn = new Golem.Connection("ws://" + CONFIG.baseUrl + "/ws", CONFIG.wsDebug);
           this.WsConn.on("open", this.open);
-          this.WsConn.on("message", this.message);
+          this.WsConn.on("project:synced", this.projectSynced);
         }
 
         WebSocket.prototype.open = function() {
@@ -22,8 +22,8 @@
           });
         };
 
-        WebSocket.prototype.message = function(data) {
-          return console.log(data);
+        WebSocket.prototype.projectSynced = function(projectId) {
+          return Devfeed.trigger("project:synced", projectId);
         };
 
         return WebSocket;

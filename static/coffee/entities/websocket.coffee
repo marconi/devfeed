@@ -6,14 +6,14 @@ define ["devfeed", "golem"], (Devfeed, Golem) ->
       constructor: ->
         @WsConn = new Golem.Connection("ws://" + CONFIG.baseUrl + "/ws", CONFIG.wsDebug)
         @WsConn.on "open", @open
-        @WsConn.on "message", @message
+        @WsConn.on "project:synced", @projectSynced
    
       open: =>
         userSession = Devfeed.request("user:session")
         @WsConn.emit "init", user_id: userSession.get("id")
    
-      message: (data) =>
-        console.log data
+      projectSynced: (projectId) =>
+        Devfeed.trigger "project:synced", projectId
 
     websocket = null
 
