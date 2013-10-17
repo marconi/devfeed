@@ -114,6 +114,7 @@ require.config
 
 define [
   "devfeed",
+  "websocket",
   "utils",
   "user_session",
   "header_app",

@@ -51,7 +51,8 @@
               length: 3,
               width: 3,
               radius: 4,
-              color: "#9ea7b3"
+              color: "#9ea7b3",
+              corners: 1
             });
           }
         };

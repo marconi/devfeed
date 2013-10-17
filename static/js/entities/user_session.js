@@ -125,6 +125,7 @@
                 _this.set("name", data.name);
                 _this.set("email", data.email);
                 _this.set("apitoken", data.apitoken);
+                Devfeed.trigger("loggedin");
                 return defer.resolve(null);
               },
               401: function(xhr, textStatus, error) {

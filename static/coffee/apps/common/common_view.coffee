@@ -76,9 +76,6 @@ define [
       template: preloaderTpl
       onDomRefresh: ->
         @$(".loading").spin
-           lines: 10
-           length: 13
-           width: 8
-           radius: 13
+          lines: 10, length: 13, width: 8, radius: 13, corders: 1
 
   return Devfeed.Common.View

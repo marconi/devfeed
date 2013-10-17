@@ -84,6 +84,7 @@ define ["devfeed", "validation"], (Devfeed, Validation) ->
               @set("name", data.name)
               @set("email", data.email)
               @set("apitoken", data.apitoken)
+              Devfeed.trigger("loggedin")
               defer.resolve null
             401: (xhr, textStatus, error) =>
               defer.resolve

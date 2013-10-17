@@ -118,7 +118,8 @@
             lines: 10,
             length: 13,
             width: 8,
-            radius: 13
+            radius: 13,
+            corders: 1
           });
         };
 

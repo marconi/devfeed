@@ -102,7 +102,7 @@
     }
   });
 
-  define(["devfeed", "utils", "user_session", "header_app", "auth_app", "project_app", "settings_app"], function(Devfeed) {
+  define(["devfeed", "websocket", "utils", "user_session", "header_app", "auth_app", "project_app", "settings_app"], function(Devfeed) {
     return Devfeed.start();
   });
 

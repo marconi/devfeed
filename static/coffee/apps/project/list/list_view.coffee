@@ -25,7 +25,7 @@ define [
       onRender: ->
         if not @model.get("issynced")
           @$(".syncing").html("&nbsp;").spin
-            lines: 8, length: 3, width: 3, radius: 4, color: "#9ea7b3"
+            lines: 8, length: 3, width: 3, radius: 4, color: "#9ea7b3", corners: 1
 
     class View.List extends Marionette.CompositeView
       id: "project-list"
