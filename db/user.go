@@ -242,7 +242,10 @@ func (u *User) SyncProjects() error {
 	}
 
 	// fetch stories of each project
-	wsConn := websocket.UserIdConnMapping[u.GetId()]
+	wsConn, err := websocket.UserConn.GetConnById(u.GetId())
+	if err != nil {
+		return errors.New(fmt.Sprintf("Unable to websocket connection: %s", err))
+	}
 	c := core.Db.C("projects")
 	for _, proj := range projects {
 		if err = proj.FetchStories(u.Person.ApiToken); err != nil {

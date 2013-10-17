@@ -142,7 +142,7 @@ func GetAllProjects(token string) ([]*Project, error) {
 func GetProjectById(id int) (*Project, error) {
 	c := core.Db.C("projects")
 	project := new(Project)
-	err := c.Find(bson.M{"id": id}).One(&project.Project)
+	err := c.Find(bson.M{"project.id": id}).One(&project.Project)
 	if err != nil {
 		return nil, err
 	}
