@@ -54,6 +54,7 @@ define ["devfeed", "validation"], (Devfeed, Validation) ->
             statusCode:
               200: (data, textStatus, xhr) =>
                 @set("sessionId", data.sessionid)
+                @set("id", data.id)
                 @set("name", data.name)
                 @set("email", data.email)
                 @set("apitoken", data.apitoken)
@@ -81,6 +82,7 @@ define ["devfeed", "validation"], (Devfeed, Validation) ->
           statusCode:
             200: (data, textStatus, xhr) =>
               @set("sessionId", data.sessionid)
+              @set("id", data.id)
               @set("name", data.name)
               @set("email", data.email)
               @set("apitoken", data.apitoken)

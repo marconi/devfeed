@@ -14,7 +14,13 @@
           this.WsConn.on("message", this.message);
         }
 
-        WebSocket.prototype.open = function() {};
+        WebSocket.prototype.open = function() {
+          var userSession;
+          userSession = Devfeed.request("user:session");
+          return this.WsConn.emit("init", {
+            user_id: userSession.get("id")
+          });
+        };
 
         WebSocket.prototype.message = function(data) {
           return console.log(data);

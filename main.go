@@ -8,7 +8,6 @@ import (
 
 	log "github.com/cihub/seelog"
 	"github.com/eknkc/amber"
-	"github.com/marconi/devfeed/chat"
 	"github.com/marconi/devfeed/controllers"
 	"github.com/marconi/devfeed/core"
 	"github.com/marconi/devfeed/db"
@@ -20,7 +19,7 @@ func init() {
 	core.LoadConfig()
 	core.InitMongo()
 	core.InitSessionStore(new(db.User))
-	chat.InitChatHandler()
+	core.InitRealtime()
 }
 
 func index(ctx context.Context) error {
@@ -108,13 +107,16 @@ func login(ctx context.Context) error {
 	if err = session.Save(r, rw); err != nil {
 		log.Error("Unable to save session: ", err)
 	}
+	userId, _ := user.Id.MarshalJSON()
 	userInfo := struct {
 		SessionID string `json:"sessionid"`
+		Id        string `json:"id"`
 		Name      string `json:"name"`
 		Email     string `json:"email"`
 		ApiToken  string `json:"apitoken"`
 	}{
 		SessionID: session.ID,
+		Id:        string(userId),
 		Name:      user.Name,
 		Email:     user.Email,
 		ApiToken:  user.Person.ApiToken,
@@ -188,13 +190,16 @@ func isloggedin(ctx context.Context) error {
 	user, ok := controllers.IsLoggedIn(ctx)
 	if ok {
 		session, _ := core.GetSession(ctx.HttpRequest())
+		userId, _ := user.Id.MarshalJSON()
 		userInfo := struct {
 			SessionID string `json:"sessionid"`
+			Id        string `json:"id"`
 			Name      string `json:"name"`
 			Email     string `json:"email"`
 			ApiToken  string `json:"apitoken"`
 		}{
 			SessionID: session.ID,
+			Id:        string(userId),
 			Name:      user.Name,
 			Email:     user.Email,
 			ApiToken:  user.Person.ApiToken,

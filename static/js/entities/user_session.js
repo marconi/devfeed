@@ -86,6 +86,7 @@
               statusCode: {
                 200: function(data, textStatus, xhr) {
                   _this.set("sessionId", data.sessionid);
+                  _this.set("id", data.id);
                   _this.set("name", data.name);
                   _this.set("email", data.email);
                   return _this.set("apitoken", data.apitoken);
@@ -122,6 +123,7 @@
             statusCode: {
               200: function(data, textStatus, xhr) {
                 _this.set("sessionId", data.sessionid);
+                _this.set("id", data.id);
                 _this.set("name", data.name);
                 _this.set("email", data.email);
                 _this.set("apitoken", data.apitoken);

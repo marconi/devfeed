@@ -9,7 +9,8 @@ define ["devfeed", "golem"], (Devfeed, Golem) ->
         @WsConn.on "message", @message
    
       open: =>
-        # @WsConn.emit "subscribe", channel: CONFIG.projChanName
+        userSession = Devfeed.request("user:session")
+        @WsConn.emit "init", user_id: userSession.get("id")
    
       message: (data) =>
         console.log data
