@@ -76,7 +76,7 @@ func (ucm *UserConnMapping) GetIdByConn(conn *golem.Connection) (string, error) 
 type WebSocketHandler struct{}
 
 func (wsh *WebSocketHandler) Init(conn *golem.Connection, data *Init) {
-	log.Info("Ping from: ", data.UserId)
+	log.Info("Init from: ", data.UserId)
 	UserConn.AddConn(data.UserId, conn)
 }
 
