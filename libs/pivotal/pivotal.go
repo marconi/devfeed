@@ -6,10 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strconv"
 	"time"
-
-	log "github.com/cihub/seelog"
 )
 
 var baseUrl = "https://www.pivotaltracker.com/services/v5"
@@ -61,42 +58,6 @@ type Project struct {
 	// StartDate                    *time.Time `json:"start_date"`
 	// HasGoogleDomain              bool       `json:"has_google_domain"`
 	// StoryIds                     []int      `json:"story_ids"`
-}
-
-// return paginated stories, total stories or an error if there's any
-func (p *Project) GetStories(token string, offset, limit int) ([]*Story, int, error) {
-	url := fmt.Sprintf("projects/%d/stories?offset=%d&limit=%d", p.Id, offset, limit)
-	res, err := Request(url, "GET", token)
-	if err != nil {
-		return nil, 0, err
-	}
-
-	defer res.Body.Close()
-	body, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		return nil, 0, err
-	}
-
-	if res.StatusCode != 200 {
-		reqError := new(Error)
-		json.Unmarshal(body, &reqError)
-		return nil, 0, errors.New(reqError.Error)
-	}
-
-	total := 0
-	totalHeader, ok := res.Header["X-Tracker-Pagination-Total"]
-	if ok {
-		total, err = strconv.Atoi(totalHeader[0])
-		if err != nil {
-			return nil, 0, err
-		}
-	}
-
-	var stories []*Story
-	json.Unmarshal(body, &stories)
-
-	log.Info("Fetching stories, project: ", p.Id, " offset: ", offset, " limit: ", limit, " total: ", len(stories))
-	return stories, total, nil
 }
 
 type membershipsummary struct {

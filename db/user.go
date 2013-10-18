@@ -248,12 +248,12 @@ func (u *User) SyncProjects() error {
 	}
 	c := core.Db.C("projects")
 	for _, proj := range projects {
-		if err = proj.FetchStories(u.Person.ApiToken); err != nil {
+		if err = proj.SyncStories(u.Person.ApiToken); err != nil {
 			log.Error("Unable to fetch stories of project ", proj.Id, " : ", err)
 		} else {
 			// mark project as synced
 			proj.IsSynced = true
-			if err := c.Update(bson.M{"project.id": proj.Id}, proj); err != nil {
+			if err := c.Update(bson.M{"id": proj.Id}, proj); err != nil {
 				return err
 			}
 			wsConn.Emit("project:synced", proj.Id)
@@ -305,7 +305,7 @@ func (u *User) FetchProjects() ([]*Project, error) {
 	// save projects
 	c := core.Db.C("projects")
 	for _, proj := range projects {
-		_, err := c.Upsert(bson.M{"project.id": proj.Id}, proj)
+		_, err := c.Upsert(bson.M{"id": proj.Id}, proj)
 		if err != nil {
 			return nil, err
 		}
@@ -334,7 +334,7 @@ func (u *User) GetProjects() ([]*Project, error) {
 		// get all projects
 		var projects []*Project
 		pc := core.Db.C("projects")
-		err = pc.Find(bson.M{"project.id": bson.M{"$in": projIds}}).All(&projects)
+		err = pc.Find(bson.M{"id": bson.M{"$in": projIds}}).All(&projects)
 		if err != nil {
 			return nil, err
 		}
