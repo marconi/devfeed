@@ -17,6 +17,34 @@ type Story struct {
 	pivotal.Story `bson:",inline"`
 }
 
+type Task struct {
+	pivotal.Task `bson:",inline"`
+}
+
+func (s *Story) FetchTasks(token string) ([]*Task, error) {
+	url := fmt.Sprintf("projects/%d/stories/%d/tasks", s.ProjectId, s.Id)
+	res, err := pivotal.Request(url, "GET", token)
+	if err != nil {
+		return nil, err
+	}
+
+	defer res.Body.Close()
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	if res.StatusCode != 200 {
+		reqError := new(pivotal.Error)
+		json.Unmarshal(body, &reqError)
+		return nil, errors.New(reqError.Error)
+	}
+
+	var tasks []*Task
+	json.Unmarshal(body, &tasks)
+	return tasks, nil
+}
+
 type Project struct {
 	pivotal.Project `bson:",inline"`
 
@@ -26,6 +54,9 @@ type Project struct {
 
 // return paginated stories, total stories or an error if there's any
 func (p *Project) FetchStories(token string, offset, limit int) ([]*Story, int, error) {
+	if offset > 0 {
+		offset *= limit
+	}
 	url := fmt.Sprintf("projects/%d/stories?offset=%d&limit=%d", p.Id, offset, limit)
 	res, err := pivotal.Request(url, "GET", token)
 	if err != nil {
@@ -56,20 +87,42 @@ func (p *Project) FetchStories(token string, offset, limit int) ([]*Story, int, 
 	var stories []*Story
 	json.Unmarshal(body, &stories)
 
-	log.Info("Fetching stories, project: ", p.Id, " offset: ", offset, " limit: ", limit, " total: ", len(stories))
+	log.Debug("Fetching stories, project: ", p.Id, " offset: ", offset, " limit: ", limit, " total: ", len(stories))
 	return stories, total, nil
 }
 
 // fetch stories from pivotal
 func (p *Project) SyncStories(token string) error {
-	c := core.Db.C("stories")
-	saveStories := func(stories []*Story) error {
+	sc := core.Db.C("stories")
+	tc := core.Db.C("tasks")
+
+	saveStories := func(stories []*Story) {
 		for _, story := range stories {
-			if _, err := c.Upsert(bson.M{"id": story.Id}, story); err != nil {
-				return errors.New(fmt.Sprintf("Error saving stories: ", err))
+			if _, err := sc.Upsert(bson.M{"id": story.Id}, story); err != nil {
+				log.Error(errors.New(fmt.Sprintf("Error saving story: ", err)))
+				continue
+			}
+
+			// we can't reliably use .TaskIds field since its
+			// excluded on Story API response
+			// if len(story.TaskIds) == 0 {
+			// 	continue
+			// }
+
+			tasks, err := story.FetchTasks(token)
+			if err != nil {
+				log.Error(errors.New(fmt.Sprintf("Error fetching tasks: ", err)))
+				continue
+			}
+
+			log.Debug("Found ", len(tasks), " tasks for story: ", story.Id)
+
+			for _, task := range tasks {
+				if _, err := tc.Upsert(bson.M{"id": task.Id}, task); err != nil {
+					log.Error(errors.New(fmt.Sprintf("Error saving task: ", err)))
+				}
 			}
 		}
-		return nil
 	}
 
 	offset := 0
@@ -80,9 +133,7 @@ func (p *Project) SyncStories(token string) error {
 	}
 
 	// save initial stories
-	if err = saveStories(stories); err != nil {
-		return err
-	}
+	saveStories(stories)
 
 	// fetch more stories if there's still more
 	offset += 1
@@ -99,9 +150,7 @@ func (p *Project) SyncStories(token string) error {
 		if err != nil {
 			return errors.New(fmt.Sprintf("Error getting stories: ", err))
 		}
-		if err = saveStories(stories); err != nil {
-			return err
-		}
+		saveStories(stories)
 		offset += 1
 	}
 	return nil

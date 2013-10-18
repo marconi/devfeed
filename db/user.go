@@ -246,22 +246,25 @@ func (u *User) SyncProjects() error {
 	if err != nil {
 		return errors.New(fmt.Sprintf("Unable to websocket connection: %s", err))
 	}
+
 	c := core.Db.C("projects")
 	for _, proj := range projects {
-		if err = proj.SyncStories(u.Person.ApiToken); err != nil {
-			log.Error("Unable to fetch stories of project ", proj.Id, " : ", err)
-		} else {
-			// mark project as synced
-			proj.IsSynced = true
-			if err := c.Update(bson.M{"id": proj.Id}, proj); err != nil {
-				return err
+		// sync each project's stories concurrently, but shouldn't
+		// spawn sub-goroutines inside since it'll exhaus PT's rate limit.
+		go func() {
+			// sync stories first
+			if err := proj.SyncStories(u.Person.ApiToken); err != nil {
+				log.Error("Unable to fetch stories of project ", proj.Id, " : ", err)
+			} else {
+				// mark project as synced
+				proj.IsSynced = true
+				if err := c.Update(bson.M{"id": proj.Id}, proj); err != nil {
+					log.Error("Unable to update project ", proj.Id, " : ", err)
+				}
+				wsConn.Emit("project:synced", proj.Id)
 			}
-			wsConn.Emit("project:synced", proj.Id)
-		}
+		}()
 	}
-
-	// TODO: fetch tasks on each story of each projects
-
 	return nil
 }
 

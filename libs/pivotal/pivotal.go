@@ -100,6 +100,16 @@ type Story struct {
 	AcceptedAt             *time.Time `json:"accepted_at"`
 }
 
+type Task struct {
+	Id          int        `json:"id"`
+	StoryId     int        `json:"story_id"`
+	Position    int        `json:"position"`
+	Description string     `json:"description"`
+	Complete    bool       `json:"complete"`
+	CreatedAt   *time.Time `json:"created_at"`
+	UpdatedAt   *time.Time `json:"updated_at"`
+}
+
 func Request(uri, method, token string) (*http.Response, error) {
 	client := &http.Client{}
 	req, err := http.NewRequest(method, fmt.Sprintf("%s/%s", baseUrl, uri), nil)
