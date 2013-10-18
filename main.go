@@ -382,8 +382,10 @@ func main() {
 	// close redis sessions
 	defer core.Session.Close()
 
-	// map static files path
-	goweb.MapStatic("/static", "static")
+	// map static files path, only for debug
+	if core.Config.App.Debug {
+		goweb.MapStatic("/static", "static")
+	}
 
 	// views with functional handlers
 	goweb.Map("GET", "/", index)
