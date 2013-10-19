@@ -1,18 +1,57 @@
 define [
   "devfeed",
   "tpl!apps/project/show/templates/sidebar.tpl",
+  "tpl!apps/project/show/templates/stories.tpl",
+  "tpl!apps/project/show/templates/story.tpl",
+  "tpl!apps/project/show/templates/empty.tpl",
   "tpl!apps/project/show/templates/chatinfo.tpl",
   "tpl!apps/project/show/templates/chatbox.tpl",
   "tpl!apps/project/show/templates/show.tpl"
-], (Devfeed, sidebarTpl, chatinfoTpl, chatboxTpl, showTpl) ->
+], (Devfeed, sidebarTpl, storiesTpl, storyTpl, emptyTpl, chatinfoTpl, chatboxTpl, showTpl) ->
 
   Devfeed.module "ProjectApp.Show.View", (View, Devfeed, Backbone, Marionette, $, _) ->
 
-    class View.Sidebar extends Marionette.ItemView
+    class View.Empty extends Marionette.ItemView
+      className: "empty"
+      tagName: "li"
+      template: emptyTpl
+
+    class View.Story extends Marionette.ItemView
+      tagName: "li"
+      template: storyTpl
+      events:
+        "click .name": "nameClicked"
+        "click .task": "taskClicked"
+
+      nameClicked: (e) ->
+        e.preventDefault()
+        @$el.toggleClass("open")
+        @$(".tasks").toggleClass("hide")
+
+      taskClicked: (e) ->
+        e.preventDefault()
+        aEl = $(e.currentTarget)
+        aEl.toggleClass("complete")
+
+        checkBox = aEl.find("input[type=checkbox]")
+        checkBox.prop "checked", (i, value) ->
+          return not value
+
+    class View.Stories extends Marionette.CompositeView
+      id: "stories"
+      template: storiesTpl
+      emptyView: View.Empty
+      itemView: View.Story
+      itemViewContainer: ".inner ul"
+
+    class View.Sidebar extends Marionette.Layout
       id: "sidebar"
       template: sidebarTpl
       events:
         "click #hide-sidebar": "hidesidebarClicked"
+      regions:
+        findStoryRegion: "#find-story-region"
+        storiesRegion: "#stories-region"
 
       hidesidebarClicked: (e) ->
         e.preventDefault()

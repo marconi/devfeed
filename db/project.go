@@ -15,6 +15,7 @@ import (
 
 type Story struct {
 	pivotal.Story `bson:",inline"`
+	Tasks         []*Task `json:"tasks"`
 }
 
 type Task struct {
@@ -94,33 +95,20 @@ func (p *Project) FetchStories(token string, offset, limit int) ([]*Story, int, 
 // fetch stories from pivotal
 func (p *Project) SyncStories(token string) error {
 	sc := core.Db.C("stories")
-	tc := core.Db.C("tasks")
-
 	saveStories := func(stories []*Story) {
 		for _, story := range stories {
-			if _, err := sc.Upsert(bson.M{"id": story.Id}, story); err != nil {
-				log.Error(errors.New(fmt.Sprintf("Error saving story: ", err)))
-				continue
-			}
-
-			// we can't reliably use .TaskIds field since its
-			// excluded on Story API response
-			// if len(story.TaskIds) == 0 {
-			// 	continue
-			// }
-
 			tasks, err := story.FetchTasks(token)
 			if err != nil {
 				log.Error(errors.New(fmt.Sprintf("Error fetching tasks: ", err)))
-				continue
+			} else {
+				story.Tasks = tasks
 			}
 
 			log.Debug("Found ", len(tasks), " tasks for story: ", story.Id)
 
-			for _, task := range tasks {
-				if _, err := tc.Upsert(bson.M{"id": task.Id}, task); err != nil {
-					log.Error(errors.New(fmt.Sprintf("Error saving task: ", err)))
-				}
+			if _, err := sc.Upsert(bson.M{"id": story.Id}, story); err != nil {
+				log.Error(errors.New(fmt.Sprintf("Error saving story: ", err)))
+				continue
 			}
 		}
 	}

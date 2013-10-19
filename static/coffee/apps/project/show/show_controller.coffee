@@ -15,7 +15,6 @@ define [
         fetchingProject = Devfeed.request("project:entity", id)
         $.when(fetchingProject).done (project) ->
           sidebarView = new ProjectShowView.Sidebar
-            model: project
           chatinfoView = new ProjectShowView.Chatinfo
           chatboxView = new ProjectShowView.Chatbox
           projectShowView = new ProjectShowView.Show
@@ -24,5 +23,10 @@ define [
           projectShowView.sidebarRegion.show(sidebarView)
           projectShowView.chatinfoRegion.show(chatinfoView)
           projectShowView.chatboxRegion.show(chatboxView)
+
+          # render stories
+          storiesView = new ProjectShowView.Stories
+            collection: project.get("stories")
+          sidebarView.storiesRegion.show(storiesView)
 
   return Devfeed.ProjectApp.Show.Controller

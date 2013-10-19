@@ -4,6 +4,20 @@ define ["devfeed"], (Devfeed) ->
 
     Entities.Proj = {}
 
+    class Entities.Proj.Task extends Backbone.Model
+      defaults:
+        id: null
+        position: null
+        description: null
+        complete: false
+        created_at: null
+        updated_at: null
+
+    class Entities.Proj.Tasks extends Backbone.Collection
+      model: Entities.Proj.Task
+      comparator: (task) ->
+        return task.get("position")
+
     class Entities.Proj.Story extends Backbone.Model
       defaults:
         id: null
@@ -11,6 +25,16 @@ define ["devfeed"], (Devfeed) ->
         description: null
         current_state: null
         url: null
+        tasks: []
+
+      initialize: ->
+        @convertRawTasks()
+
+      convertRawTasks: ->
+        rawTasks = @get("tasks")
+        if _.isArray(rawTasks)
+          tasks = new Entities.Proj.Tasks(rawTasks)
+          @set("tasks", tasks)
 
     class Entities.Proj.Stories extends Backbone.Collection
       model: Entities.Proj.Story
@@ -30,6 +54,8 @@ define ["devfeed"], (Devfeed) ->
           return response.d
 
       initialize: ->
+        @convertRawStories()
+
         # whenever the project changes (like due to fetch),
         # make sure raw stories gets converted
         @on "change", @convertRawStories

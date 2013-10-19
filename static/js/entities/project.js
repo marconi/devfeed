@@ -5,14 +5,51 @@
 
   define(["devfeed"], function(Devfeed) {
     Devfeed.module("Entities", function(Entities, Devfeed, Backbone, Marionette, $, _) {
-      var API, projects, _ref, _ref1, _ref2, _ref3;
+      var API, projects, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
       Entities.Proj = {};
+      Entities.Proj.Task = (function(_super) {
+        __extends(Task, _super);
+
+        function Task() {
+          _ref = Task.__super__.constructor.apply(this, arguments);
+          return _ref;
+        }
+
+        Task.prototype.defaults = {
+          id: null,
+          position: null,
+          description: null,
+          complete: false,
+          created_at: null,
+          updated_at: null
+        };
+
+        return Task;
+
+      })(Backbone.Model);
+      Entities.Proj.Tasks = (function(_super) {
+        __extends(Tasks, _super);
+
+        function Tasks() {
+          _ref1 = Tasks.__super__.constructor.apply(this, arguments);
+          return _ref1;
+        }
+
+        Tasks.prototype.model = Entities.Proj.Task;
+
+        Tasks.prototype.comparator = function(task) {
+          return task.get("position");
+        };
+
+        return Tasks;
+
+      })(Backbone.Collection);
       Entities.Proj.Story = (function(_super) {
         __extends(Story, _super);
 
         function Story() {
-          _ref = Story.__super__.constructor.apply(this, arguments);
-          return _ref;
+          _ref2 = Story.__super__.constructor.apply(this, arguments);
+          return _ref2;
         }
 
         Story.prototype.defaults = {
@@ -20,7 +57,21 @@
           name: null,
           description: null,
           current_state: null,
-          url: null
+          url: null,
+          tasks: []
+        };
+
+        Story.prototype.initialize = function() {
+          return this.convertRawTasks();
+        };
+
+        Story.prototype.convertRawTasks = function() {
+          var rawTasks, tasks;
+          rawTasks = this.get("tasks");
+          if (_.isArray(rawTasks)) {
+            tasks = new Entities.Proj.Tasks(rawTasks);
+            return this.set("tasks", tasks);
+          }
         };
 
         return Story;
@@ -30,8 +81,8 @@
         __extends(Stories, _super);
 
         function Stories() {
-          _ref1 = Stories.__super__.constructor.apply(this, arguments);
-          return _ref1;
+          _ref3 = Stories.__super__.constructor.apply(this, arguments);
+          return _ref3;
         }
 
         Stories.prototype.model = Entities.Proj.Story;
@@ -47,8 +98,8 @@
         __extends(Project, _super);
 
         function Project() {
-          _ref2 = Project.__super__.constructor.apply(this, arguments);
-          return _ref2;
+          _ref4 = Project.__super__.constructor.apply(this, arguments);
+          return _ref4;
         }
 
         Project.prototype.defaults = {
@@ -68,6 +119,7 @@
         };
 
         Project.prototype.initialize = function() {
+          this.convertRawStories();
           return this.on("change", this.convertRawStories);
         };
 
@@ -87,8 +139,8 @@
         __extends(Projects, _super);
 
         function Projects() {
-          _ref3 = Projects.__super__.constructor.apply(this, arguments);
-          return _ref3;
+          _ref5 = Projects.__super__.constructor.apply(this, arguments);
+          return _ref5;
         }
 
         Projects.prototype.model = Entities.Proj.Project;
