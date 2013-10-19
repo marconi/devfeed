@@ -55,5 +55,18 @@ func (c *ProjController) Read(id string, ctx context.Context) error {
 		log.Error("Unable to get project: ", err)
 		return goweb.Respond.WithStatus(ctx, http.StatusNotFound)
 	}
-	return goweb.API.RespondWithData(ctx, project)
+
+	stories, err := project.GetStories()
+	if err != nil {
+		log.Error("Unable to get stories for project ", id, " : ", err)
+	}
+
+	data := struct {
+		*db.Project
+		Stories []*db.Story `json:"stories"`
+	}{
+		project,
+		stories,
+	}
+	return goweb.API.RespondWithData(ctx, data)
 }

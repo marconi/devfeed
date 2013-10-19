@@ -79,25 +79,25 @@ type Me struct {
 type Story struct {
 	Id                     int        `json:"id"`
 	ProjectId              int        `json:"project_id"`
-	FollowerIds            []int      `json:"follower_ids"`
-	UpdatedAt              *time.Time `json:"udpated_at"`
+	FollowerIds            []int      `json:"follower_ids,omitempty"`
+	UpdatedAt              *time.Time `json:"udpated_at,omitempty"`
 	CurrentState           string     `json:"current_state"` // accepted, delivered, finished, started, rejected, unstarted, unscheduled
 	Name                   string     `json:"name"`
-	CommentIds             []int      `json:"comment_ids"`
+	CommentIds             []int      `json:"comment_ids,omitempty"`
 	Url                    string     `json:"url"`
 	StoryType              string     `json:"story_type"` // feature, bug, chore, release
-	LabelIds               []int      `json:"label_ids"`
+	LabelIds               []int      `json:"label_ids,omitempty"`
 	Description            string     `json:"description"`
-	RequestedById          int        `json:"requested_by_id"`
-	PlannedIterationNumber int        `json:"planned_iteration_number"`
-	ExternalId             string     `json:"external_id"`
-	Deadline               *time.Time `json:"deadline"`
-	OwnedById              int        `json:"owned_by_id"`
-	CreatedAt              *time.Time `json:"created_at"`
-	Estimate               float64    `json:"estimate"`
-	TaskIds                []int      `json:"task_ids"`
-	IntegrationId          int        `json:"integration_id"`
-	AcceptedAt             *time.Time `json:"accepted_at"`
+	RequestedById          int        `json:"requested_by_id,omitempty"`
+	PlannedIterationNumber int        `json:"planned_iteration_number,omitempty"`
+	ExternalId             string     `json:"external_id,omitempty"`
+	Deadline               *time.Time `json:"deadline,omitempty"`
+	OwnedById              int        `json:"owned_by_id,omitempty"`
+	CreatedAt              *time.Time `json:"created_at,omitempty"`
+	Estimate               float64    `json:"estimate,omitempty"`
+	TaskIds                []int      `json:"task_ids,omitempty"`
+	IntegrationId          int        `json:"integration_id,omitempty"`
+	AcceptedAt             *time.Time `json:"accepted_at,omitempty"`
 }
 
 type Task struct {

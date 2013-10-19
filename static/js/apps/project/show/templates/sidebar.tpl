@@ -13,9 +13,15 @@
   <div class="small-12 columns">
     <div class="inner">
       <ul>
-        <li><a href="#">Nibh Sit Ornare Pharetra Lorem</a></li>
-        <li><a href="#">Pharetra Inceptos Pellentesque Ligula Ullamcorper</a></li>
-        <li><a href="#">Vehicula Ligula Consectetur Ullamcorper Bibendum</a></li>
+        <% if (stories.length > 0) { %>
+          <% stories.each(function(story) { %>
+            <li>
+              <a href="/projects/<%= id %>/stories/<%= story.get("id") %>">
+                <%= story.get("name") %>
+              </a>
+            </li>
+          <% }); %>
+        <% } %>
       </ul>
     </div>
   </div>

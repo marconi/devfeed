@@ -385,6 +385,7 @@ func main() {
 	// map static files path, only for debug
 	if core.Config.App.Debug {
 		goweb.MapStatic("/static", "static")
+		goweb.Map("GET", "/tests", tests)
 	}
 
 	// views with functional handlers
@@ -413,9 +414,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
-	// TODO: test only, comment on production
-	goweb.Map("GET", "/tests", tests)
 
 	// run the server
 	addr := fmt.Sprintf(":%s", strconv.Itoa(core.Config.App.Port))

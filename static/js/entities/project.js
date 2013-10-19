@@ -5,20 +5,54 @@
 
   define(["devfeed"], function(Devfeed) {
     Devfeed.module("Entities", function(Entities, Devfeed, Backbone, Marionette, $, _) {
-      var API, projects, _ref, _ref1;
+      var API, projects, _ref, _ref1, _ref2, _ref3;
       Entities.Proj = {};
+      Entities.Proj.Story = (function(_super) {
+        __extends(Story, _super);
+
+        function Story() {
+          _ref = Story.__super__.constructor.apply(this, arguments);
+          return _ref;
+        }
+
+        Story.prototype.defaults = {
+          id: null,
+          name: null,
+          description: null,
+          current_state: null,
+          url: null
+        };
+
+        return Story;
+
+      })(Backbone.Model);
+      Entities.Proj.Stories = (function(_super) {
+        __extends(Stories, _super);
+
+        function Stories() {
+          _ref1 = Stories.__super__.constructor.apply(this, arguments);
+          return _ref1;
+        }
+
+        Stories.prototype.model = Entities.Proj.Story;
+
+        return Stories;
+
+      })(Backbone.Collection);
       Entities.Proj.Project = (function(_super) {
         __extends(Project, _super);
 
         function Project() {
-          _ref = Project.__super__.constructor.apply(this, arguments);
-          return _ref;
+          _ref2 = Project.__super__.constructor.apply(this, arguments);
+          return _ref2;
         }
 
         Project.prototype.defaults = {
           id: null,
           name: null,
-          issynced: false
+          issynced: false,
+          stories: [],
+          time_zone: null
         };
 
         Project.prototype.urlRoot = "/api/projects";
@@ -29,6 +63,19 @@
           }
         };
 
+        Project.prototype.initialize = function() {
+          return this.on("change", this.convertRawStories);
+        };
+
+        Project.prototype.convertRawStories = function() {
+          var rawStories, stories;
+          rawStories = this.get("stories");
+          if (_.isArray(rawStories)) {
+            stories = new Entities.Proj.Stories(rawStories);
+            return this.set("stories", stories);
+          }
+        };
+
         return Project;
 
       })(Backbone.Model);
@@ -36,8 +83,8 @@
         __extends(Projects, _super);
 
         function Projects() {
-          _ref1 = Projects.__super__.constructor.apply(this, arguments);
-          return _ref1;
+          _ref3 = Projects.__super__.constructor.apply(this, arguments);
+          return _ref3;
         }
 
         Projects.prototype.model = Entities.Proj.Project;

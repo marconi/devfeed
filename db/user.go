@@ -209,11 +209,7 @@ func (u *User) Update(name, email, password, apitoken string) (map[string]string
 			u.Person.ApiToken = apitoken
 
 			// sync projects
-			go func() {
-				if err := u.SyncProjects(); err != nil {
-					log.Error("Error syncing projects: ", err)
-				}
-			}()
+			go u.syncProjectsAndNotify()
 		}
 	}
 
@@ -229,26 +225,50 @@ func (u *User) Update(name, email, password, apitoken string) (map[string]string
 	return nil, nil
 }
 
-func (u *User) SyncProjects() error {
+func (u *User) syncProjectsAndNotify() {
+	wsConn, err := websocket.UserConn.GetConnById(u.GetId())
+	if err != nil {
+		log.Error("Unable to websocket connection: ", err)
+		return
+	}
+
+	projChan, err := u.SyncProjects()
+	if err != nil {
+		log.Error(err)
+		return
+	}
+
+	for {
+		select {
+		case projId := <-projChan:
+			if projId > 0 {
+				wsConn.Emit("project:synced", projId)
+			} else {
+				log.Info("Exiting projects counter...")
+				return
+			}
+		}
+	}
+}
+
+func (u *User) SyncProjects() (<-chan int, error) {
 	// fetch projects
 	projects, err := u.FetchProjects()
 	if err != nil {
-		return errors.New(fmt.Sprintf("Unable to fetch projects: %s", err))
+		return nil, errors.New(fmt.Sprintf("Unable to fetch projects: %s", err))
 	}
 
 	// build project memberships
 	if err = u.BuildProjMemberships(); err != nil {
-		return errors.New(fmt.Sprintf("Unable to build project memberships: %s", err))
+		return nil, errors.New(fmt.Sprintf("Unable to build project memberships: %s", err))
 	}
+
+	projChan := make(chan int)
+	projsChan := make(chan int)
 
 	// fetch stories of each project
-	wsConn, err := websocket.UserConn.GetConnById(u.GetId())
-	if err != nil {
-		return errors.New(fmt.Sprintf("Unable to websocket connection: %s", err))
-	}
-
 	c := core.Db.C("projects")
-	for _, proj := range projects {
+	for i, proj := range projects {
 		// sync each project's stories concurrently, but shouldn't
 		// spawn sub-goroutines inside since it'll exhaus PT's rate limit.
 		go func() {
@@ -260,12 +280,29 @@ func (u *User) SyncProjects() error {
 				proj.IsSynced = true
 				if err := c.Update(bson.M{"id": proj.Id}, proj); err != nil {
 					log.Error("Unable to update project ", proj.Id, " : ", err)
+				} else {
+					projChan <- proj.Id
 				}
-				wsConn.Emit("project:synced", proj.Id)
 			}
+
+			projsChan <- i
 		}()
 	}
-	return nil
+
+	go func() {
+		for {
+			select {
+			case index := <-projsChan:
+				if index+1 == len(projects) {
+					projChan <- -1
+					log.Info("Exiting index counter...")
+					return
+				}
+			}
+		}
+	}()
+
+	return projChan, nil
 }
 
 func (u *User) BuildProjMemberships() error {
