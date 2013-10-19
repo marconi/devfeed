@@ -14,6 +14,8 @@ define ["devfeed"], (Devfeed) ->
 
     class Entities.Proj.Stories extends Backbone.Collection
       model: Entities.Proj.Story
+      comparator: (story) ->
+        return story.get("id")
 
     class Entities.Proj.Project extends Backbone.Model
       defaults:

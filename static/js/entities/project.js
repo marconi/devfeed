@@ -36,6 +36,10 @@
 
         Stories.prototype.model = Entities.Proj.Story;
 
+        Stories.prototype.comparator = function(story) {
+          return story.get("id");
+        };
+
         return Stories;
 
       })(Backbone.Collection);
