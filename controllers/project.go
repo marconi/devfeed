@@ -12,24 +12,6 @@ import (
 	"github.com/stretchr/goweb/context"
 )
 
-func IsLoggedIn(ctx context.Context) (*db.User, bool) {
-	session, err := core.GetSession(ctx.HttpRequest())
-	user, ok := session.Values["user"]
-
-	// if there's an error or we didn't get existing user,
-	// then user is notauthorized.
-	if err != nil || session.IsNew || !ok {
-		return nil, false
-	} else {
-		switch t := user.(type) {
-		case *db.User:
-			return t, true
-		default:
-			return nil, false
-		}
-	}
-}
-
 type ProjController struct{}
 
 func (c *ProjController) ReadMany(ctx context.Context) error {
@@ -71,7 +53,7 @@ func (c *ProjController) Read(id string, ctx context.Context) error {
 		return goweb.API.RespondWithData(ctx, data)
 	}
 
-	stories, err := project.GetStories(utils.NewPaging(0, 50))
+	stories, err := project.GetStories(utils.NewPaging(0, core.Config.App.StoriesPaging))
 	if err != nil {
 		log.Error("Unable to get stories for project ", id, " : ", err)
 	}

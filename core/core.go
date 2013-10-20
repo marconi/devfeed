@@ -26,13 +26,14 @@ var (
 
 type AppConfig struct {
 	App struct {
-		Port         int
-		Templates    string
-		SecretKey    string
-		SessConnPool int
-		SessName     string
-		BaseUrl      string
-		Debug        bool
+		Port          int
+		Templates     string
+		SecretKey     string
+		SessConnPool  int
+		SessName      string
+		BaseUrl       string
+		Debug         bool
+		StoriesPaging int
 	}
 	Redis struct {
 		Url string

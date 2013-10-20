@@ -61,6 +61,8 @@
           tasks: []
         };
 
+        Story.prototype.urlRoot = "/api/stories";
+
         Story.prototype.initialize = function() {
           return this.convertRawTasks();
         };
@@ -87,9 +89,19 @@
 
         Stories.prototype.model = Entities.Proj.Story;
 
+        Stories.prototype.url = "/api/stories";
+
         Stories.prototype.comparator = function(story) {
           return story.get("id");
         };
+
+        Stories.prototype.parse = function(response, options) {
+          if (response.s === 200) {
+            return response.d;
+          }
+        };
+
+        Stories.prototype.offset = 0;
 
         return Stories;
 
@@ -147,6 +159,10 @@
 
         Projects.prototype.url = "/api/projects";
 
+        Projects.prototype.comparator = function(project) {
+          return project.get("id");
+        };
+
         Projects.prototype.parse = function(response, options) {
           if (response.s === 200) {
             return response.d;
@@ -161,9 +177,7 @@
         getProject: function(id) {
           var defer, project;
           defer = $.Deferred();
-          project = new Entities.Proj.Project({
-            id: id
-          });
+          project = projects.get(id);
           project.fetch({
             success: function(model, response, options) {
               if (response.d.redirect_to != null) {
@@ -198,13 +212,38 @@
             defer.resolve(projects);
           }
           return defer.promise();
+        },
+        getMoreStories: function(id, offset) {
+          var defer, project, stories, targetOffset;
+          defer = $.Deferred();
+          project = projects.get(id);
+          stories = project.get("stories");
+          targetOffset = stories.offset + stories.size();
+          stories.fetch({
+            remove: false,
+            data: {
+              project_id: id,
+              offset: targetOffset
+            },
+            success: function(collection, response, options) {
+              stories.offset = targetOffset;
+              return defer.resolve(null);
+            },
+            error: function(collection, response, options) {
+              return defer.resolve(null);
+            }
+          });
+          return defer.promise();
         }
       };
       Devfeed.reqres.setHandler("project:entity", function(id) {
         return API.getProject(id);
       });
-      return Devfeed.reqres.setHandler("project:entities", function() {
+      Devfeed.reqres.setHandler("project:entities", function() {
         return API.getProjects();
+      });
+      return Devfeed.reqres.setHandler("project:stories:more", function(id) {
+        return API.getMoreStories(id);
       });
     });
     return Devfeed.Entities.Proj;

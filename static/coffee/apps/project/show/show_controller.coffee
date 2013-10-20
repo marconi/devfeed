@@ -28,6 +28,11 @@ define [
           # render stories
           storiesView = new ProjectShowView.Stories
             collection: project.get("stories")
+          storiesView.on "stories:more", ->
+            projectId = project.get("id")
+            fetchingStories = Devfeed.request("project:stories:more", projectId)
+            $.when(fetchingStories).done ->
+              storiesView.triggerMethod("more:stories")
           sidebarView.storiesRegion.show(storiesView)
 
   return Devfeed.ProjectApp.Show.Controller

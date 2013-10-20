@@ -6,7 +6,8 @@
         "SessConnPool": 10,
         "SessName": "devfeed",
         "BaseUrl": "http://dvfeed.com",
-        "Debug": false
+        "Debug": false,
+        "StoriesPaging": 20
     },
     "Redis": {
         "Url": "localhost:6379"

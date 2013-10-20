@@ -26,6 +26,7 @@ define ["devfeed"], (Devfeed) ->
         current_state: null
         url: null
         tasks: []
+      urlRoot: "/api/stories"
 
       initialize: ->
         @convertRawTasks()
@@ -38,8 +39,13 @@ define ["devfeed"], (Devfeed) ->
 
     class Entities.Proj.Stories extends Backbone.Collection
       model: Entities.Proj.Story
+      url: "/api/stories"
       comparator: (story) ->
         return story.get("id")
+      parse: (response, options) ->
+        if response.s == 200
+          return response.d
+      offset: 0
 
     class Entities.Proj.Project extends Backbone.Model
       defaults:
@@ -69,6 +75,8 @@ define ["devfeed"], (Devfeed) ->
     class Entities.Proj.Projects extends Backbone.Collection
       model: Entities.Proj.Project
       url: "/api/projects"
+      comparator: (project) ->
+        return project.get("id")
       parse: (response, options) ->
         if response.s == 200
           return response.d
@@ -80,7 +88,7 @@ define ["devfeed"], (Devfeed) ->
         # fetch project's stories and other info from backend,
         # because its not enough to just use .get from projects collection.
         defer = $.Deferred()
-        project = new Entities.Proj.Project id: id
+        project = projects.get(id)
         project.fetch
           success: (model, response, options) ->
             if response.d.redirect_to?
@@ -91,6 +99,7 @@ define ["devfeed"], (Devfeed) ->
             console.log arguments
             defer.resolve undefined
         return defer.promise()
+
       getProjects: ->
         defer = $.Deferred()
         if projects.length == 0
@@ -105,10 +114,28 @@ define ["devfeed"], (Devfeed) ->
           defer.resolve projects
         return defer.promise()
 
+      getMoreStories: (id, offset) ->
+        defer = $.Deferred()
+        project = projects.get(id)
+        stories = project.get("stories")
+        targetOffset = stories.offset + stories.size()
+        stories.fetch
+          remove: false
+          data: project_id: id, offset: targetOffset
+          success: (collection, response, options) ->
+            stories.offset = targetOffset
+            defer.resolve null
+          error: (collection, response, options) ->
+            defer.resolve null
+        return defer.promise()
+
     Devfeed.reqres.setHandler "project:entity", (id) ->
       return API.getProject(id)
 
     Devfeed.reqres.setHandler "project:entities", ->
       return API.getProjects()
+
+    Devfeed.reqres.setHandler "project:stories:more", (id) ->
+      return API.getMoreStories(id)
 
   return Devfeed.Entities.Proj

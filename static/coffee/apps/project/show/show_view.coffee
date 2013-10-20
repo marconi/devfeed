@@ -58,6 +58,11 @@ define [
         e.preventDefault()
         @$(".more span").addClass("hide")
         @$(".more div").spin(CommonUtils.SmallSpin)
+        @trigger("stories:more")
+
+      onMoreStories: ->
+        @$(".more div").spin(false)
+        @$(".more span").removeClass("hide")
 
     class View.Sidebar extends Marionette.Layout
       id: "sidebar"

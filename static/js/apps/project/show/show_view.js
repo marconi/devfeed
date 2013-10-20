@@ -95,7 +95,13 @@
         Stories.prototype.moreClicked = function(e) {
           e.preventDefault();
           this.$(".more span").addClass("hide");
-          return this.$(".more div").spin(CommonUtils.SmallSpin);
+          this.$(".more div").spin(CommonUtils.SmallSpin);
+          return this.trigger("stories:more");
+        };
+
+        Stories.prototype.onMoreStories = function() {
+          this.$(".more div").spin(false);
+          return this.$(".more span").removeClass("hide");
         };
 
         return Stories;

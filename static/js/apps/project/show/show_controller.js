@@ -25,6 +25,14 @@
             storiesView = new ProjectShowView.Stories({
               collection: project.get("stories")
             });
+            storiesView.on("stories:more", function() {
+              var fetchingStories, projectId;
+              projectId = project.get("id");
+              fetchingStories = Devfeed.request("project:stories:more", projectId);
+              return $.when(fetchingStories).done(function() {
+                return storiesView.triggerMethod("more:stories");
+              });
+            });
             return sidebarView.storiesRegion.show(storiesView);
           });
         }
