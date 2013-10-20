@@ -23,6 +23,7 @@ define ["devfeed", "golem"], (Devfeed, Golem) ->
         # api multiple times without creating each time.
         if not websocket
           websocket = new Entities.WebSocket()
+
       getWebSocket: ->
         return websocket
 

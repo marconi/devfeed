@@ -25,10 +25,6 @@ define [
           projectShowView.chatinfoRegion.show(chatinfoView)
           projectShowView.chatboxRegion.show(chatboxView)
 
-          # render find story form
-          findStoryView = new ProjectShowView.FindStory
-          sidebarView.findStoryRegion.show(findStoryView)
-
           # render stories
           storiesView = new ProjectShowView.Stories
             collection: project.get("stories")
@@ -38,5 +34,13 @@ define [
             $.when(fetchingStories).done ->
               storiesView.triggerMethod("more:stories")
           sidebarView.storiesRegion.show(storiesView)
+
+          # render find story form
+          findStoryView = new ProjectShowView.FindStory
+          findStoryView.on "settings:shown", ->
+            storiesView.$el.addClass("settings-shown")
+          findStoryView.on "settings:hidden", ->
+            storiesView.$el.removeClass("settings-shown")
+          sidebarView.findStoryRegion.show(findStoryView)
 
   return Devfeed.ProjectApp.Show.Controller

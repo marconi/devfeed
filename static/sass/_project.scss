@@ -175,6 +175,36 @@
             }
           }
         }
+
+        .settings {
+          background: $darkVioletBlue;
+          border-top: 2px solid $darkerVioletBlue;
+          border-bottom: 2px solid $darkerVioletBlue;
+
+          ul {
+            margin: 0;
+            list-style: none;
+            overflow: hidden;
+            padding: 10px;
+
+            li {
+              float: left;
+              display: block;
+              width: 95px;
+
+              label {
+                font-size: 14px;
+                color: $white;
+                font-weight: normal;
+
+                input {
+                  margin: 5px 5px 0 0;
+                  float: left;
+                }
+              }
+            }
+          }
+        }
       }
 
       #stories-region {
@@ -301,6 +331,10 @@
             .spinner {
               top: 8px !important;
             }
+          }
+
+          &.settings-shown {
+            padding-top: 174px;
           }
         }
       }

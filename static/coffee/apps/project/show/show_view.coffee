@@ -69,6 +69,16 @@ define [
       id: "find-story"
       className: "small-12 columns"
       template: findStoryTpl
+      events:
+        "click .settings-cog a": "settingsClicked"
+
+      settingsClicked: (e) ->
+        e.preventDefault()
+        if @$(".settings").hasClass("hide")
+          @trigger("settings:shown")
+        else
+          @trigger("settings:hidden")  
+        @$(".settings").toggleClass("hide")
 
     class View.Sidebar extends Marionette.Layout
       id: "sidebar"

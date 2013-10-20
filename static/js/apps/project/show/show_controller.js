@@ -22,8 +22,6 @@
             projectShowView.sidebarRegion.show(sidebarView);
             projectShowView.chatinfoRegion.show(chatinfoView);
             projectShowView.chatboxRegion.show(chatboxView);
-            findStoryView = new ProjectShowView.FindStory;
-            sidebarView.findStoryRegion.show(findStoryView);
             storiesView = new ProjectShowView.Stories({
               collection: project.get("stories")
             });
@@ -35,7 +33,15 @@
                 return storiesView.triggerMethod("more:stories");
               });
             });
-            return sidebarView.storiesRegion.show(storiesView);
+            sidebarView.storiesRegion.show(storiesView);
+            findStoryView = new ProjectShowView.FindStory;
+            findStoryView.on("settings:shown", function() {
+              return storiesView.$el.addClass("settings-shown");
+            });
+            findStoryView.on("settings:hidden", function() {
+              return storiesView.$el.removeClass("settings-shown");
+            });
+            return sidebarView.findStoryRegion.show(findStoryView);
           });
         }
       };

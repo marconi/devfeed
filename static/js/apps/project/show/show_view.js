@@ -121,6 +121,20 @@
 
         FindStory.prototype.template = findStoryTpl;
 
+        FindStory.prototype.events = {
+          "click .settings-cog a": "settingsClicked"
+        };
+
+        FindStory.prototype.settingsClicked = function(e) {
+          e.preventDefault();
+          if (this.$(".settings").hasClass("hide")) {
+            this.trigger("settings:shown");
+          } else {
+            this.trigger("settings:hidden");
+          }
+          return this.$(".settings").toggleClass("hide");
+        };
+
         return FindStory;
 
       })(Marionette.ItemView);

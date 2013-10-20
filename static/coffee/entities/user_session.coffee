@@ -197,6 +197,7 @@ define ["devfeed", "validation"], (Devfeed, Validation) ->
     API =
       isLoggedIn: ->
         return userSession.isLoggedIn()
+
       getUserSession: ->
         return userSession
 
