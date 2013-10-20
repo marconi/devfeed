@@ -7,6 +7,7 @@ import (
 	log "github.com/cihub/seelog"
 	"github.com/marconi/devfeed/core"
 	"github.com/marconi/devfeed/db"
+	"github.com/marconi/devfeed/utils"
 	"github.com/stretchr/goweb"
 	"github.com/stretchr/goweb/context"
 )
@@ -70,7 +71,7 @@ func (c *ProjController) Read(id string, ctx context.Context) error {
 		return goweb.API.RespondWithData(ctx, data)
 	}
 
-	stories, err := project.GetStories()
+	stories, err := project.GetStories(utils.NewPaging(0, 50))
 	if err != nil {
 		log.Error("Unable to get stories for project ", id, " : ", err)
 	}

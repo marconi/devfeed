@@ -10,6 +10,7 @@ import (
 	log "github.com/cihub/seelog"
 	"github.com/marconi/devfeed/core"
 	"github.com/marconi/devfeed/libs/pivotal"
+	"github.com/marconi/devfeed/utils"
 	"labix.org/v2/mgo/bson"
 )
 
@@ -179,10 +180,11 @@ func (p *Project) SyncMoreInfo(token string) error {
 }
 
 // get the stored  project stories
-func (p *Project) GetStories() ([]*Story, error) {
+func (p *Project) GetStories(paging utils.PagingInfo) ([]*Story, error) {
 	var stories []*Story
 	c := core.Db.C("stories")
-	if err := c.Find(bson.M{"projectid": p.Id}).All(&stories); err != nil {
+	q := c.Find(bson.M{"projectid": p.Id}).Sort("id").Skip(paging.Offset()).Limit(paging.Limit())
+	if err := q.All(&stories); err != nil {
 		return nil, err
 	}
 	return stories, nil

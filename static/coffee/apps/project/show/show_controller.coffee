@@ -15,6 +15,7 @@ define [
         fetchingProject = Devfeed.request("project:entity", id)
         $.when(fetchingProject).done (project) ->
           sidebarView = new ProjectShowView.Sidebar
+            model: project
           chatinfoView = new ProjectShowView.Chatinfo
           chatboxView = new ProjectShowView.Chatbox
           projectShowView = new ProjectShowView.Show

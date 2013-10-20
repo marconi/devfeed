@@ -30,6 +30,7 @@
       project: "entities/project",
       websocket: "entities/websocket",
       common_view: "apps/common/common_view",
+      common_utils: "apps/common/common_utils",
       auth_app: "apps/auth/auth_app",
       login_controller: "apps/auth/login/login_controller",
       login_view: "apps/auth/login/login_view",

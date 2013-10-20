@@ -3,7 +3,7 @@
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define(["devfeed", "tpl!apps/project/show/templates/sidebar.tpl", "tpl!apps/project/show/templates/stories.tpl", "tpl!apps/project/show/templates/story.tpl", "tpl!apps/project/show/templates/empty.tpl", "tpl!apps/project/show/templates/chatinfo.tpl", "tpl!apps/project/show/templates/chatbox.tpl", "tpl!apps/project/show/templates/show.tpl"], function(Devfeed, sidebarTpl, storiesTpl, storyTpl, emptyTpl, chatinfoTpl, chatboxTpl, showTpl) {
+  define(["devfeed", "common_utils", "tpl!apps/project/show/templates/sidebar.tpl", "tpl!apps/project/show/templates/stories.tpl", "tpl!apps/project/show/templates/story.tpl", "tpl!apps/project/show/templates/empty.tpl", "tpl!apps/project/show/templates/chatinfo.tpl", "tpl!apps/project/show/templates/chatbox.tpl", "tpl!apps/project/show/templates/show.tpl"], function(Devfeed, CommonUtils, sidebarTpl, storiesTpl, storyTpl, emptyTpl, chatinfoTpl, chatboxTpl, showTpl) {
     Devfeed.module("ProjectApp.Show.View", function(View, Devfeed, Backbone, Marionette, $, _) {
       var _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6;
       View.Empty = (function(_super) {
@@ -81,6 +81,22 @@
         Stories.prototype.itemView = View.Story;
 
         Stories.prototype.itemViewContainer = ".inner ul";
+
+        Stories.prototype.events = {
+          "click .more": "moreClicked"
+        };
+
+        Stories.prototype.onRender = function() {
+          if (this.collection.size() > 0) {
+            return this.$(".more").removeClass("hide");
+          }
+        };
+
+        Stories.prototype.moreClicked = function(e) {
+          e.preventDefault();
+          this.$(".more span").addClass("hide");
+          return this.$(".more div").spin(CommonUtils.SmallSpin);
+        };
 
         return Stories;
 

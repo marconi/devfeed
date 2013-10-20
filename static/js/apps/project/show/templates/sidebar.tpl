@@ -1,5 +1,5 @@
 <div id="project-name" class="row collapse">
-  Footy Sprofila <a href="#" id="hide-sidebar">&laquo;</a>
+  <%= name %><a href="#" id="hide-sidebar">&laquo;</a>
 </div>
 
 <div id="find-story-region" class="row collapse">

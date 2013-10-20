@@ -10,7 +10,9 @@
           fetchingProject = Devfeed.request("project:entity", id);
           return $.when(fetchingProject).done(function(project) {
             var chatboxView, chatinfoView, projectShowView, sidebarView, storiesView;
-            sidebarView = new ProjectShowView.Sidebar;
+            sidebarView = new ProjectShowView.Sidebar({
+              model: project
+            });
             chatinfoView = new ProjectShowView.Chatinfo;
             chatboxView = new ProjectShowView.Chatbox;
             projectShowView = new ProjectShowView.Show({

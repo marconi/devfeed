@@ -3,7 +3,7 @@
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define(["devfeed", "alert", "tpl!apps/common/templates/alert.tpl", "tpl!apps/common/templates/preloader.tpl"], function(Devfeed, Alert, alertTpl, preloaderTpl) {
+  define(["devfeed", "common_utils", "alert", "tpl!apps/common/templates/alert.tpl", "tpl!apps/common/templates/preloader.tpl"], function(Devfeed, CommonUtils, Alert, alertTpl, preloaderTpl) {
     Devfeed.module("Common.View", function(View, Devfeed, Backbone, Marionette, $, _) {
       var _ref, _ref1, _ref2;
       View.Alert = (function(_super) {
@@ -82,7 +82,7 @@
         };
 
         FormViewMixin.prototype.showPreloader = function() {
-          return this.ui.primaryBtn.attr("data-label", this.ui.primaryBtn.html()).html("&nbsp;").addClass("disabled").spin("small");
+          return this.ui.primaryBtn.attr("data-label", this.ui.primaryBtn.html()).html("&nbsp;").addClass("disabled").spin(CommonUtils.SmallSpin);
         };
 
         FormViewMixin.prototype.clearErrors = function() {
@@ -119,7 +119,7 @@
             length: 13,
             width: 8,
             radius: 13,
-            corders: 1
+            corners: 1
           });
         };
 

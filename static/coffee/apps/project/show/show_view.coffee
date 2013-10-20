@@ -1,5 +1,6 @@
 define [
   "devfeed",
+  "common_utils",
   "tpl!apps/project/show/templates/sidebar.tpl",
   "tpl!apps/project/show/templates/stories.tpl",
   "tpl!apps/project/show/templates/story.tpl",
@@ -7,7 +8,7 @@ define [
   "tpl!apps/project/show/templates/chatinfo.tpl",
   "tpl!apps/project/show/templates/chatbox.tpl",
   "tpl!apps/project/show/templates/show.tpl"
-], (Devfeed, sidebarTpl, storiesTpl, storyTpl, emptyTpl, chatinfoTpl, chatboxTpl, showTpl) ->
+], (Devfeed, CommonUtils, sidebarTpl, storiesTpl, storyTpl, emptyTpl, chatinfoTpl, chatboxTpl, showTpl) ->
 
   Devfeed.module "ProjectApp.Show.View", (View, Devfeed, Backbone, Marionette, $, _) ->
 
@@ -46,6 +47,17 @@ define [
       emptyView: View.Empty
       itemView: View.Story
       itemViewContainer: ".inner ul"
+      events:
+        "click .more": "moreClicked"
+
+      onRender: ->
+        if @collection.size() > 0
+          @$(".more").removeClass("hide")
+
+      moreClicked: (e) ->
+        e.preventDefault()
+        @$(".more span").addClass("hide")
+        @$(".more div").spin(CommonUtils.SmallSpin)
 
     class View.Sidebar extends Marionette.Layout
       id: "sidebar"

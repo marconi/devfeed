@@ -1,9 +1,10 @@
 define [
   "devfeed",
+  "common_utils",
   "alert",
   "tpl!apps/common/templates/alert.tpl",
   "tpl!apps/common/templates/preloader.tpl"
-], (Devfeed, Alert, alertTpl, preloaderTpl) ->
+], (Devfeed, CommonUtils, Alert, alertTpl, preloaderTpl) ->
 
   Devfeed.module "Common.View", (View, Devfeed, Backbone, Marionette, $, _) ->
 
@@ -52,7 +53,7 @@ define [
           .attr("data-label", @ui.primaryBtn.html())
           .html("&nbsp;")
           .addClass("disabled")
-          .spin("small")
+          .spin(CommonUtils.SmallSpin)
 
       clearErrors: ->
         @$("input").removeClass("error")
@@ -76,6 +77,6 @@ define [
       template: preloaderTpl
       onDomRefresh: ->
         @$(".loading").spin
-          lines: 10, length: 13, width: 8, radius: 13, corders: 1
+          lines: 10, length: 13, width: 8, radius: 13, corners: 1
 
   return Devfeed.Common.View

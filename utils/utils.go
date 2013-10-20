@@ -25,3 +25,25 @@ func GenerateKey(vals ...string) string {
 func IsValidEmail(email string) bool {
 	return emailPattern.MatchString(email)
 }
+
+type PagingInfo interface {
+	Offset() int
+	Limit() int
+}
+
+type Paging struct {
+	offset int
+	limit  int
+}
+
+func NewPaging(offset, limit int) *Paging {
+	return &Paging{offset: offset, limit: limit}
+}
+
+func (p *Paging) Offset() int {
+	return p.offset
+}
+
+func (p *Paging) Limit() int {
+	return p.limit
+}
