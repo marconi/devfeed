@@ -2,13 +2,14 @@ define [
   "devfeed",
   "common_utils",
   "tpl!apps/project/show/templates/sidebar.tpl",
+  "tpl!apps/project/show/templates/findstory.tpl",
   "tpl!apps/project/show/templates/stories.tpl",
   "tpl!apps/project/show/templates/story.tpl",
   "tpl!apps/project/show/templates/empty.tpl",
   "tpl!apps/project/show/templates/chatinfo.tpl",
   "tpl!apps/project/show/templates/chatbox.tpl",
   "tpl!apps/project/show/templates/show.tpl"
-], (Devfeed, CommonUtils, sidebarTpl, storiesTpl, storyTpl, emptyTpl, chatinfoTpl, chatboxTpl, showTpl) ->
+], (Devfeed, CommonUtils, sidebarTpl, findStoryTpl, storiesTpl, storyTpl, emptyTpl, chatinfoTpl, chatboxTpl, showTpl) ->
 
   Devfeed.module "ProjectApp.Show.View", (View, Devfeed, Backbone, Marionette, $, _) ->
 
@@ -63,6 +64,11 @@ define [
       onMoreStories: ->
         @$(".more div").spin(false)
         @$(".more span").removeClass("hide")
+
+    class View.FindStory extends Marionette.ItemView
+      id: "find-story"
+      className: "small-12 columns"
+      template: findStoryTpl
 
     class View.Sidebar extends Marionette.Layout
       id: "sidebar"

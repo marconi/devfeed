@@ -218,7 +218,7 @@
           defer = $.Deferred();
           project = projects.get(id);
           stories = project.get("stories");
-          targetOffset = stories.offset + stories.size();
+          targetOffset = stories.size();
           stories.fetch({
             remove: false,
             data: {
@@ -226,7 +226,9 @@
               offset: targetOffset
             },
             success: function(collection, response, options) {
-              stories.offset = targetOffset;
+              if (response.s === 200 && response.d.length > 0) {
+                stories.offset = targetOffset;
+              }
               return defer.resolve(null);
             },
             error: function(collection, response, options) {

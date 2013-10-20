@@ -118,12 +118,13 @@ define ["devfeed"], (Devfeed) ->
         defer = $.Deferred()
         project = projects.get(id)
         stories = project.get("stories")
-        targetOffset = stories.offset + stories.size()
+        targetOffset = stories.size()
         stories.fetch
           remove: false
           data: project_id: id, offset: targetOffset
           success: (collection, response, options) ->
-            stories.offset = targetOffset
+            if response.s == 200 and response.d.length > 0
+              stories.offset = targetOffset
             defer.resolve null
           error: (collection, response, options) ->
             defer.resolve null

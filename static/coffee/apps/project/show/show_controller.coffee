@@ -25,6 +25,10 @@ define [
           projectShowView.chatinfoRegion.show(chatinfoView)
           projectShowView.chatboxRegion.show(chatboxView)
 
+          # render find story form
+          findStoryView = new ProjectShowView.FindStory
+          sidebarView.findStoryRegion.show(findStoryView)
+
           # render stories
           storiesView = new ProjectShowView.Stories
             collection: project.get("stories")

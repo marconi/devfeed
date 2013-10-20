@@ -3,9 +3,9 @@
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define(["devfeed", "common_utils", "tpl!apps/project/show/templates/sidebar.tpl", "tpl!apps/project/show/templates/stories.tpl", "tpl!apps/project/show/templates/story.tpl", "tpl!apps/project/show/templates/empty.tpl", "tpl!apps/project/show/templates/chatinfo.tpl", "tpl!apps/project/show/templates/chatbox.tpl", "tpl!apps/project/show/templates/show.tpl"], function(Devfeed, CommonUtils, sidebarTpl, storiesTpl, storyTpl, emptyTpl, chatinfoTpl, chatboxTpl, showTpl) {
+  define(["devfeed", "common_utils", "tpl!apps/project/show/templates/sidebar.tpl", "tpl!apps/project/show/templates/findstory.tpl", "tpl!apps/project/show/templates/stories.tpl", "tpl!apps/project/show/templates/story.tpl", "tpl!apps/project/show/templates/empty.tpl", "tpl!apps/project/show/templates/chatinfo.tpl", "tpl!apps/project/show/templates/chatbox.tpl", "tpl!apps/project/show/templates/show.tpl"], function(Devfeed, CommonUtils, sidebarTpl, findStoryTpl, storiesTpl, storyTpl, emptyTpl, chatinfoTpl, chatboxTpl, showTpl) {
     Devfeed.module("ProjectApp.Show.View", function(View, Devfeed, Backbone, Marionette, $, _) {
-      var _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6;
+      var _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7;
       View.Empty = (function(_super) {
         __extends(Empty, _super);
 
@@ -107,12 +107,29 @@
         return Stories;
 
       })(Marionette.CompositeView);
+      View.FindStory = (function(_super) {
+        __extends(FindStory, _super);
+
+        function FindStory() {
+          _ref3 = FindStory.__super__.constructor.apply(this, arguments);
+          return _ref3;
+        }
+
+        FindStory.prototype.id = "find-story";
+
+        FindStory.prototype.className = "small-12 columns";
+
+        FindStory.prototype.template = findStoryTpl;
+
+        return FindStory;
+
+      })(Marionette.ItemView);
       View.Sidebar = (function(_super) {
         __extends(Sidebar, _super);
 
         function Sidebar() {
-          _ref3 = Sidebar.__super__.constructor.apply(this, arguments);
-          return _ref3;
+          _ref4 = Sidebar.__super__.constructor.apply(this, arguments);
+          return _ref4;
         }
 
         Sidebar.prototype.id = "sidebar";
@@ -140,8 +157,8 @@
         __extends(Chatinfo, _super);
 
         function Chatinfo() {
-          _ref4 = Chatinfo.__super__.constructor.apply(this, arguments);
-          return _ref4;
+          _ref5 = Chatinfo.__super__.constructor.apply(this, arguments);
+          return _ref5;
         }
 
         Chatinfo.prototype.id = "chatinfo";
@@ -164,8 +181,8 @@
         __extends(Chatbox, _super);
 
         function Chatbox() {
-          _ref5 = Chatbox.__super__.constructor.apply(this, arguments);
-          return _ref5;
+          _ref6 = Chatbox.__super__.constructor.apply(this, arguments);
+          return _ref6;
         }
 
         Chatbox.prototype.id = "chatbox";
@@ -179,8 +196,8 @@
         __extends(Show, _super);
 
         function Show() {
-          _ref6 = Show.__super__.constructor.apply(this, arguments);
-          return _ref6;
+          _ref7 = Show.__super__.constructor.apply(this, arguments);
+          return _ref7;
         }
 
         Show.prototype.id = "project-details";

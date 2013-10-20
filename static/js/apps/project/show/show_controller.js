@@ -9,7 +9,7 @@
           Devfeed.contentRegion.show(preloaderView);
           fetchingProject = Devfeed.request("project:entity", id);
           return $.when(fetchingProject).done(function(project) {
-            var chatboxView, chatinfoView, projectShowView, sidebarView, storiesView;
+            var chatboxView, chatinfoView, findStoryView, projectShowView, sidebarView, storiesView;
             sidebarView = new ProjectShowView.Sidebar({
               model: project
             });
@@ -22,6 +22,8 @@
             projectShowView.sidebarRegion.show(sidebarView);
             projectShowView.chatinfoRegion.show(chatinfoView);
             projectShowView.chatboxRegion.show(chatboxView);
+            findStoryView = new ProjectShowView.FindStory;
+            sidebarView.findStoryRegion.show(findStoryView);
             storiesView = new ProjectShowView.Stories({
               collection: project.get("stories")
             });
