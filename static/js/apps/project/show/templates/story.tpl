@@ -1,3 +1,4 @@
+<% if (tasks.length > 0) { %><i class="icon-ellipsis-vertical has-tasks"></i><% } %>
 <a href="/projects/#/stories/<%= id %>" class="name"><%= name %></a>
 <ul class="tasks hide">
   <% if (tasks.length > 0) { %>

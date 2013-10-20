@@ -215,6 +215,12 @@
                 }
               }
 
+              .has-tasks {
+                float: right;
+                margin: 10px 10px 0 0;
+                color: $violetBlue;
+              }
+
               .tasks {
                 background: $darkVioletBlue;
                 border-top: 2px solid $darkerVioletBlue;
