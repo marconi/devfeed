@@ -2,6 +2,22 @@
 (function() {
   define(["devfeed", "common_view", "project_show_view"], function(Devfeed, CommonView, ProjectShowView) {
     Devfeed.module("ProjectApp.Show", function(Show, Devfeed, Backbone, Marionette, $, _) {
+      var renderStories;
+      renderStories = function(sidebarView, filters, project) {
+        var storiesView;
+        storiesView = new ProjectShowView.Stories({
+          collection: project.get("stories")
+        });
+        storiesView.on("stories:more", function() {
+          var fetchingStories;
+          fetchingStories = Devfeed.request("project:stories", project.get("id"), filters, false, false);
+          return $.when(fetchingStories).done(function() {
+            return storiesView.triggerMethod("more:stories");
+          });
+        });
+        sidebarView.storiesRegion.show(storiesView);
+        return storiesView;
+      };
       return Show.Controller = {
         showProject: function(id) {
           var fetchingProject, preloaderView;
@@ -9,7 +25,7 @@
           Devfeed.contentRegion.show(preloaderView);
           fetchingProject = Devfeed.request("project:entity", id);
           return $.when(fetchingProject).done(function(project) {
-            var chatboxView, chatinfoView, findStoryView, projectShowView, sidebarView, storiesView;
+            var chatboxView, chatinfoView, findStoryView, projectShowView, sidebarView;
             sidebarView = new ProjectShowView.Sidebar({
               model: project
             });
@@ -22,24 +38,6 @@
             projectShowView.sidebarRegion.show(sidebarView);
             projectShowView.chatinfoRegion.show(chatinfoView);
             projectShowView.chatboxRegion.show(chatboxView);
-            storiesView = new ProjectShowView.Stories({
-              collection: project.get("stories")
-            });
-            storiesView.on("stories:more", function() {
-              var fetchingStories;
-              fetchingStories = Devfeed.request("project:stories:more", project.get("id"));
-              return $.when(fetchingStories).done(function() {
-                return storiesView.triggerMethod("more:stories");
-              });
-            });
-            storiesView.on("filters:changed", function(filters) {
-              var filteringStories;
-              filteringStories = Devfeed.request("project:stories:filter", project.get("id"), filters);
-              return $.when(filteringStories).done(function() {
-                return sidebarView.triggerMethod("stories:filtered");
-              });
-            });
-            sidebarView.storiesRegion.show(storiesView);
             findStoryView = new ProjectShowView.FindStory;
             findStoryView.on("settings:shown", function() {
               return sidebarView.triggerMethod("settings:shown");
@@ -48,9 +46,21 @@
               return sidebarView.triggerMethod("settings:hidden");
             });
             findStoryView.on("filters:changed", function(filters) {
-              return sidebarView.triggerMethod("filters:changed", filters);
+              var fetchingStories, filterPreloaderView;
+              filterPreloaderView = new ProjectShowView.FilterPreloader;
+              sidebarView.storiesRegion.show(filterPreloaderView);
+              project.get("stories").reset();
+              fetchingStories = Devfeed.request("project:stories", project.get("id"), filters, true, true);
+              return $.when(fetchingStories).done(function() {
+                var storiesView;
+                storiesView = renderStories(sidebarView, findStoryView.filters, project);
+                if (!$("#find-story .settings").hasClass("hide")) {
+                  return storiesView.$el.addClass("settings-shown");
+                }
+              });
             });
-            return sidebarView.findStoryRegion.show(findStoryView);
+            sidebarView.findStoryRegion.show(findStoryView);
+            return renderStories(sidebarView, findStoryView.filters, project);
           });
         }
       };

@@ -86,12 +86,6 @@
           "click .more": "moreClicked"
         };
 
-        Stories.prototype.onRender = function() {
-          if (this.collection.size() > 0) {
-            return this.$(".more").removeClass("hide");
-          }
-        };
-
         Stories.prototype.moreClicked = function(e) {
           e.preventDefault();
           this.$(".more span").addClass("hide");
@@ -104,8 +98,12 @@
           return this.$(".more span").removeClass("hide");
         };
 
-        Stories.prototype.onStoriesFiltered = function() {
-          return console.log("stories filtered!");
+        Stories.prototype.onCompositeCollectionRendered = function() {
+          if (this.collection.size() > 0) {
+            return this.$(".more").removeClass("hide");
+          } else {
+            return this.$(".more").addClass("hide");
+          }
         };
 
         return Stories;
@@ -152,6 +150,8 @@
           "change .settings input[type=checkbox]": "settingsChanged"
         };
 
+        FindStory.prototype.filters = [];
+
         FindStory.prototype.settingsClicked = function(e) {
           e.preventDefault();
           if (this.$(".settings").hasClass("hide")) {
@@ -170,7 +170,8 @@
           filters = _.map(filters, function(filter) {
             return $(filter).attr("name");
           });
-          return this.trigger("filters:changed", filters);
+          this.filters = filters;
+          return this.trigger("filters:changed", this.filters);
         };
 
         return FindStory;
@@ -199,25 +200,9 @@
 
         Sidebar.prototype.filterPreloaderView = null;
 
-        Sidebar.prototype.storiesView = null;
-
         Sidebar.prototype.hidesidebarClicked = function(e) {
           e.preventDefault();
           return console.log("hiding...");
-        };
-
-        Sidebar.prototype.onFiltersChanged = function(filters) {
-          if (!this.storiesView) {
-            this.storiesView = this.storiesRegion.currentView;
-            this.filterPreloaderView = new View.FilterPreloader;
-            this.storiesRegion.show(this.filterPreloaderView);
-          }
-          return this.storiesView.trigger("filters:changed", filters);
-        };
-
-        Sidebar.prototype.onStoriesFiltered = function() {
-          this.storiesRegion.show(this.storiesView);
-          return this.storiesView = null;
         };
 
         Sidebar.prototype.onSettingsShown = function() {

@@ -187,7 +187,6 @@
               }
             },
             error: function(model, response, options) {
-              console.log(arguments);
               return defer.resolve(void 0);
             }
           });
@@ -213,43 +212,24 @@
           }
           return defer.promise();
         },
-        getMoreStories: function(id, offset) {
+        getStories: function(id, filters, isReset, isRemove) {
           var defer, project, stories, targetOffset;
           defer = $.Deferred();
           project = projects.get(id);
           stories = project.get("stories");
           targetOffset = stories.size();
           stories.fetch({
-            remove: false,
+            reset: isReset,
+            remove: isRemove,
             data: {
               project_id: id,
-              offset: targetOffset
+              offset: targetOffset,
+              filters: filters.join(",")
             },
             success: function(collection, response, options) {
               if (response.s === 200 && response.d.length > 0) {
                 stories.offset = targetOffset;
               }
-              return defer.resolve(null);
-            },
-            error: function(collection, response, options) {
-              return defer.resolve(null);
-            }
-          });
-          return defer.promise();
-        },
-        getFilteredStories: function(id, filters) {
-          var defer, project, stories;
-          defer = $.Deferred();
-          project = projects.get(id);
-          stories = project.get("stories");
-          stories.fetch({
-            reset: true,
-            data: {
-              project_id: id,
-              filters: filters.join(",")
-            },
-            success: function(collection, response, options) {
-              stories.offset = 0;
               return defer.resolve(null);
             },
             error: function(collection, response, options) {
@@ -265,11 +245,8 @@
       Devfeed.reqres.setHandler("project:entities", function() {
         return API.getProjects();
       });
-      Devfeed.reqres.setHandler("project:stories:more", function(id) {
-        return API.getMoreStories(id);
-      });
-      return Devfeed.reqres.setHandler("project:stories:filter", function(id, filters) {
-        return API.getFilteredStories(id, filters);
+      return Devfeed.reqres.setHandler("project:stories", function(id, filters, isReset, isRemove) {
+        return API.getStories(id, filters, isReset, isRemove);
       });
     });
     return Devfeed.Entities.Proj;

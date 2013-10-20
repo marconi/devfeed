@@ -64,10 +64,6 @@ define [
       events:
         "click .more": "moreClicked"
 
-      onRender: ->
-        if @collection.size() > 0
-          @$(".more").removeClass("hide")
-
       moreClicked: (e) ->
         e.preventDefault()
         @$(".more span").addClass("hide")
@@ -78,8 +74,11 @@ define [
         @$(".more div").spin(false)
         @$(".more span").removeClass("hide")
 
-      onStoriesFiltered: ->
-        console.log "stories filtered!"
+      onCompositeCollectionRendered: ->
+        if @collection.size() > 0
+          @$(".more").removeClass("hide")
+        else
+          @$(".more").addClass("hide")
 
     class View.FilterPreloader extends Marionette.ItemView
       id: "filter-preloader"
@@ -96,6 +95,7 @@ define [
       events:
         "click .settings-cog a": "settingsClicked"
         "change .settings input[type=checkbox]": "settingsChanged"
+      filters: []
 
       settingsClicked: (e) ->
         e.preventDefault()
@@ -110,7 +110,8 @@ define [
           return $(checkbox).is(":checked")
         filters = _.map filters, (filter) ->
           return $(filter).attr("name")
-        @trigger("filters:changed", filters)
+        @filters = filters
+        @trigger("filters:changed", @filters)
 
     class View.Sidebar extends Marionette.Layout
       id: "sidebar"
@@ -121,27 +122,10 @@ define [
         findStoryRegion: "#find-story-region"
         storiesRegion: "#stories-region"
       filterPreloaderView: null
-      storiesView: null
 
       hidesidebarClicked: (e) ->
         e.preventDefault()
         console.log "hiding..."
-
-      onFiltersChanged: (filters) ->
-        if not @storiesView
-          # store a reference to the stories view for it'll be overridden
-          # when the filter preloader is shown
-          @storiesView = @storiesRegion.currentView
-
-          @filterPreloaderView = new View.FilterPreloader
-          @storiesRegion.show(@filterPreloaderView)
-
-        # query for stories with the filters applied
-        @storiesView.trigger("filters:changed", filters)
-
-      onStoriesFiltered: ->
-        @storiesRegion.show(@storiesView)
-        @storiesView = null
 
       onSettingsShown: ->
         @storiesRegion.currentView.$el.addClass("settings-shown")

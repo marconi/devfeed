@@ -263,6 +263,7 @@
                     font-size: 14px;
                     color: $white;
                     padding: 10px;
+                    text-align: center;
                   }
 
                   a {
@@ -331,6 +332,10 @@
 
             .spinner {
               top: 8px !important;
+            }
+
+            &.hide {
+              display: none;
             }
           }
 

@@ -6,6 +6,16 @@ define [
 
   Devfeed.module "ProjectApp.Show", (Show, Devfeed, Backbone, Marionette, $, _) ->
 
+    renderStories = (sidebarView, filters, project) ->
+      storiesView = new ProjectShowView.Stories
+        collection: project.get("stories")
+      storiesView.on "stories:more", ->
+        fetchingStories = Devfeed.request("project:stories", project.get("id"), filters, false, false)
+        $.when(fetchingStories).done ->
+          storiesView.triggerMethod("more:stories")
+      sidebarView.storiesRegion.show(storiesView)
+      return storiesView
+
     Show.Controller =
       showProject: (id) ->
         # show preloader first while project is being loaded
@@ -25,20 +35,6 @@ define [
           projectShowView.chatinfoRegion.show(chatinfoView)
           projectShowView.chatboxRegion.show(chatboxView)
 
-          # render stories
-          storiesView = new ProjectShowView.Stories
-            collection: project.get("stories")
-          storiesView.on "stories:more", ->
-            fetchingStories = Devfeed.request("project:stories:more", project.get("id"))
-            $.when(fetchingStories).done ->
-              storiesView.triggerMethod("more:stories")
-          storiesView.on "filters:changed", (filters) ->
-            filteringStories = Devfeed.request("project:stories:filter", project.get("id"), filters)
-            $.when(filteringStories).done ->
-              # storiesView.triggerMethod("stories:filtered")
-              sidebarView.triggerMethod("stories:filtered")
-          sidebarView.storiesRegion.show(storiesView)
-
           # render find story form
           findStoryView = new ProjectShowView.FindStory
           findStoryView.on "settings:shown", ->
@@ -46,7 +42,22 @@ define [
           findStoryView.on "settings:hidden", ->
             sidebarView.triggerMethod("settings:hidden")
           findStoryView.on "filters:changed", (filters) ->
-            sidebarView.triggerMethod("filters:changed", filters)
+            # show preloader first
+            filterPreloaderView = new ProjectShowView.FilterPreloader
+            sidebarView.storiesRegion.show(filterPreloaderView)
+
+            # clear out existing stories
+            project.get("stories").reset()
+
+            # then fetch filtered stories
+            fetchingStories = Devfeed.request("project:stories", project.get("id"), filters, true, true)
+            $.when(fetchingStories).done ->
+              storiesView = renderStories(sidebarView, findStoryView.filters, project)
+              if not $("#find-story .settings").hasClass("hide")
+                storiesView.$el.addClass("settings-shown")
           sidebarView.findStoryRegion.show(findStoryView)
+
+          # render stories
+          renderStories(sidebarView, findStoryView.filters, project)
 
   return Devfeed.ProjectApp.Show.Controller

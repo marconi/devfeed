@@ -96,7 +96,6 @@ define ["devfeed"], (Devfeed) ->
             else
               defer.resolve model
           error: (model, response, options) ->
-            console.log arguments
             defer.resolve undefined
         return defer.promise()
 
@@ -114,31 +113,21 @@ define ["devfeed"], (Devfeed) ->
           defer.resolve projects
         return defer.promise()
 
-      getMoreStories: (id, offset) ->
+      getStories: (id, filters, isReset, isRemove) ->
         defer = $.Deferred()
         project = projects.get(id)
         stories = project.get("stories")
         targetOffset = stories.size()
         stories.fetch
-          remove: false
-          data: project_id: id, offset: targetOffset
+          reset: isReset
+          remove: isRemove
+          data:
+            project_id: id
+            offset: targetOffset
+            filters: filters.join(",")
           success: (collection, response, options) ->
             if response.s == 200 and response.d.length > 0
               stories.offset = targetOffset
-            defer.resolve null
-          error: (collection, response, options) ->
-            defer.resolve null
-        return defer.promise()
-
-      getFilteredStories: (id, filters) ->
-        defer = $.Deferred()
-        project = projects.get(id)
-        stories = project.get("stories")
-        stories.fetch
-          reset: true
-          data: project_id: id, filters: filters.join(",")
-          success: (collection, response, options) ->
-            stories.offset = 0
             defer.resolve null
           error: (collection, response, options) ->
             defer.resolve null
@@ -150,10 +139,7 @@ define ["devfeed"], (Devfeed) ->
     Devfeed.reqres.setHandler "project:entities", ->
       return API.getProjects()
 
-    Devfeed.reqres.setHandler "project:stories:more", (id) ->
-      return API.getMoreStories(id)
-
-    Devfeed.reqres.setHandler "project:stories:filter", (id, filters) ->
-      return API.getFilteredStories(id, filters)
+    Devfeed.reqres.setHandler "project:stories", (id, filters, isReset, isRemove) ->
+      return API.getStories(id, filters, isReset, isRemove)
 
   return Devfeed.Entities.Proj
