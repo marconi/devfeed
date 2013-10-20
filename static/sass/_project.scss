@@ -217,25 +217,35 @@
 
               .tasks {
                 background: $darkVioletBlue;
+                border-top: 2px solid $darkerVioletBlue;
+                border-bottom: 2px solid $darkerVioletBlue;
                 list-style: none;
                 margin: 0;
 
-                li a {
-                  display: block;
-                  padding: 7px 10px;
-                  font-size: 14px;
-                  color: $white;
-
-                  &:hover {
-                    background: $violetBlue;
+                li {
+                  &.empty {
+                    font-size: 14px;
+                    color: $white;
+                    padding: 10px;
                   }
 
-                  &.complete {
-                    text-decoration: line-through;
-                  }
+                  a {
+                    display: block;
+                    padding: 7px 10px;
+                    font-size: 14px;
+                    color: $white;
 
-                  input {
-                    margin: 0 10px 0 0;
+                    &:hover {
+                      background: $violetBlue;
+                    }
+
+                    &.complete {
+                      text-decoration: line-through;
+                    }
+
+                    input {
+                      margin: 0 10px 0 0;
+                    }
                   }
                 }
               }

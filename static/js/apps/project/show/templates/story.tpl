@@ -1,6 +1,6 @@
 <a href="/projects/#/stories/<%= id %>" class="name"><%= name %></a>
-<% if (tasks.length > 0) { %>
-  <ul class="tasks hide">
+<ul class="tasks hide">
+  <% if (tasks.length > 0) { %>
     <% tasks.each(function(task) { %>
       <li>
         <% if (task.get("complete")) { %>
@@ -14,5 +14,7 @@
         </a>
       </li>
     <% }); %>
-  </ul>
-<% } %>
+  <% } else { %>
+    <li class="empty">This story doesn't have tasks.</li>
+  <% } %>
+</ul>
