@@ -239,7 +239,7 @@
 
                 &:hover {
                   background: $lightestBlue;
-                  border-left: 4px solid $aqua;
+                  border-left: 4px solid $aqua !important;
                   padding-left: 6px;
                   color: $aqua;
                 }
@@ -294,23 +294,28 @@
               }
 
               &.started > a {
-                color: $aqua;
+                border-left: 4px solid $aqua;
+                padding-left: 6px;
               }
 
               &.finished > a {
-                color: $darkBlue;
+                border-left: 4px solid $darkBlue;
+                padding-left: 6px;
               }
 
               &.delivered > a {
-                color: $orange;
+                border-left: 4px solid $orange;
+                padding-left: 6px;
               }
 
               &.accepted > a {
-                color: $green;
+                border-left: 4px solid $green;
+                padding-left: 6px;
               }
 
               &.rejected > a {
-                color: $maroon;
+                border-left: 4px solid $maroon;
+                padding-left: 6px;
               }
             }
           }
