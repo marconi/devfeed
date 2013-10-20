@@ -40,6 +40,10 @@
           "click .task": "taskClicked"
         };
 
+        Story.prototype.onRender = function() {
+          return this.$el.addClass(this.model.get("current_state"));
+        };
+
         Story.prototype.nameClicked = function(e) {
           e.preventDefault();
           this.$el.toggleClass("open");

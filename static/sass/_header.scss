@@ -52,7 +52,8 @@
       width: 160px !important;
       left: auto !important;
       top: -9999px !important;
-      @include box-shadow($lightGray -2px 2px 0px 0px);
+      padding: 5px;
+      @include box-shadow($lightGray 0px 1px 0px 0px);
       @include border-radius(3px);
 
       a {
@@ -77,20 +78,9 @@
         top: 25px !important;
       }
 
-      .settings {
-        border-bottom: 1px solid $lighterGray;
-      }
-
-      .settings:hover {
-        @include border-radius(3px 3px 0px 0px);
-      }
-
-      .logout:hover {
-        @include border-radius(0px 0px 3px 3px);
-      }
-
       li:hover {
         background: $lighterBlue;
+        @include border-radius(3px);
       }
     }
   }

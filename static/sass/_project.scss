@@ -177,69 +177,93 @@
         }
       }
 
-      #stories {
-        padding-top: 102px;
+      #stories-region {
         height: 100%;
 
-        > .columns {
+        #stories {
+          padding-top: 102px;
           height: 100%;
-          overflow-y: scroll;
-        }
 
-        .inner > ul {
-          padding: 0;
-          margin: 0;
-          list-style: none;
+          > .columns {
+            height: 100%;
+            overflow-y: scroll;
+          }
 
-          > li {
-            &.empty {
-              font-size: 14px;
-              padding: 10px;
-            }
+          .inner > ul {
+            padding: 0;
+            margin: 0;
+            list-style: none;
 
-            > a {
-              display: block;
-              font-size: 14px;
-              padding: 10px;
-              color: $violetBlue;
-              border-bottom: 1px solid $lighterBlue;
-
-              &:hover {
-                background: $lightestBlue;
-                border-left: 4px solid $aqua;
-                padding-left: 6px;
-                color: $aqua;
-              }
-            }
-
-            .tasks {
-              background: $darkVioletBlue;
-              list-style: none;
-              margin: 0;
-
-              li a {
-                display: block;
-                padding: 7px 10px;
+            > li {
+              &.empty {
                 font-size: 14px;
-                color: $white;
+                padding: 10px;
+              }
+
+              > a {
+                display: block;
+                font-size: 14px;
+                padding: 10px;
+                color: $violetBlue;
+                border-bottom: 1px solid $lighterBlue;
 
                 &:hover {
-                  background: $violetBlue;
-                }
-
-                &.complete {
-                  text-decoration: line-through;
-                }
-
-                input {
-                  margin: 0 10px 0 0;
+                  background: $lightestBlue;
+                  border-left: 4px solid $aqua;
+                  padding-left: 6px;
+                  color: $aqua;
                 }
               }
-            }
 
-            &.open {
-              > a {
-                font-weight: bold;
+              .tasks {
+                background: $darkVioletBlue;
+                list-style: none;
+                margin: 0;
+
+                li a {
+                  display: block;
+                  padding: 7px 10px;
+                  font-size: 14px;
+                  color: $white;
+
+                  &:hover {
+                    background: $violetBlue;
+                  }
+
+                  &.complete {
+                    text-decoration: line-through;
+                  }
+
+                  input {
+                    margin: 0 10px 0 0;
+                  }
+                }
+              }
+
+              &.open {
+                > a {
+                  font-weight: bold;
+                }
+              }
+
+              &.started > a {
+                color: $aqua;
+              }
+
+              &.finished > a {
+                color: $darkBlue;
+              }
+
+              &.delivered > a {
+                color: $orange;
+              }
+
+              &.accepted > a {
+                color: $green;
+              }
+
+              &.rejected > a {
+                color: $maroon;
               }
             }
           }

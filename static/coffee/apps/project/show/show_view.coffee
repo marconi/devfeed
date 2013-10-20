@@ -23,6 +23,9 @@ define [
         "click .name": "nameClicked"
         "click .task": "taskClicked"
 
+      onRender: ->
+        @$el.addClass(@model.get("current_state"))
+
       nameClicked: (e) ->
         e.preventDefault()
         @$el.toggleClass("open")

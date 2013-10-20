@@ -9,6 +9,9 @@ define ["backbone", "marionette", "underscore"], (Backbone, Marionette, _) ->
   Devfeed.navigate = (route, options) ->
     Backbone.history.navigate(route, options or {})
 
+  Devfeed.redirect = (route) ->
+    window.location = route
+
   Devfeed.getCurrentRoute = ->
     return Backbone.history.fragment
 

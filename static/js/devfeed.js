@@ -10,6 +10,9 @@
     Devfeed.navigate = function(route, options) {
       return Backbone.history.navigate(route, options || {});
     };
+    Devfeed.redirect = function(route) {
+      return window.location = route;
+    };
     Devfeed.getCurrentRoute = function() {
       return Backbone.history.fragment;
     };

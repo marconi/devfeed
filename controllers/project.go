@@ -56,6 +56,20 @@ func (c *ProjController) Read(id string, ctx context.Context) error {
 		return goweb.Respond.WithStatus(ctx, http.StatusNotFound)
 	}
 
+	// redirect to home page if project being access is not yet synced
+	if !project.IsSynced {
+		r := ctx.HttpRequest()
+		session, _ := core.GetSession(r)
+		session.AddFlash("The project you're trying to access is not yet synced")
+		if err := session.Save(r, ctx.HttpResponseWriter()); err != nil {
+			log.Error("Unable to save session: ", err)
+		}
+		data := struct {
+			RedirectTo string `json:"redirect_to"`
+		}{"/"}
+		return goweb.API.RespondWithData(ctx, data)
+	}
+
 	stories, err := project.GetStories()
 	if err != nil {
 		log.Error("Unable to get stories for project ", id, " : ", err)

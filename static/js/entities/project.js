@@ -165,10 +165,15 @@
             id: id
           });
           project.fetch({
-            success: function(data) {
-              return defer.resolve(data);
+            success: function(model, response, options) {
+              if (response.d.redirect_to != null) {
+                return Devfeed.redirect(response.d.redirect_to);
+              } else {
+                return defer.resolve(model);
+              }
             },
-            error: function(data) {
+            error: function(model, response, options) {
+              console.log(arguments);
               return defer.resolve(void 0);
             }
           });

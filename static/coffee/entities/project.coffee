@@ -82,9 +82,13 @@ define ["devfeed"], (Devfeed) ->
         defer = $.Deferred()
         project = new Entities.Proj.Project id: id
         project.fetch
-          success: (data) ->
-            defer.resolve data
-          error: (data) ->
+          success: (model, response, options) ->
+            if response.d.redirect_to?
+              Devfeed.redirect(response.d.redirect_to)
+            else
+              defer.resolve model
+          error: (model, response, options) ->
+            console.log arguments
             defer.resolve undefined
         return defer.promise()
       getProjects: ->
