@@ -16,6 +16,10 @@ define [
       sidebarView.storiesRegion.show(storiesView)
       return storiesView
 
+    bindOnStoriesRendered = (storiesView, findStoryView) ->
+      storiesView.on "stories:more:rendered", ->
+        findStoryView.bindLiveFilter()
+
     Show.Controller =
       showProject: (id) ->
         # show preloader first while project is being loaded
@@ -35,8 +39,14 @@ define [
           projectShowView.chatinfoRegion.show(chatinfoView)
           projectShowView.chatboxRegion.show(chatboxView)
 
+          # render stories
+          storiesView = renderStories(sidebarView, [], project)
+
           # render find story form
           findStoryView = new ProjectShowView.FindStory
+          bindOnStoriesRendered(storiesView, findStoryView)
+
+          # handle triggers
           findStoryView.on "settings:shown", ->
             sidebarView.triggerMethod("settings:shown")
           findStoryView.on "settings:hidden", ->
@@ -53,11 +63,9 @@ define [
             fetchingStories = Devfeed.request("project:stories", project.get("id"), filters, true, true)
             $.when(fetchingStories).done ->
               storiesView = renderStories(sidebarView, findStoryView.filters, project)
+              bindOnStoriesRendered(storiesView, findStoryView)
               if not $("#find-story .settings").hasClass("hide")
                 storiesView.$el.addClass("settings-shown")
           sidebarView.findStoryRegion.show(findStoryView)
-
-          # render stories
-          renderStories(sidebarView, findStoryView.filters, project)
 
   return Devfeed.ProjectApp.Show.Controller

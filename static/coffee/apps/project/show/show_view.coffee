@@ -1,5 +1,6 @@
 define [
   "devfeed",
+  "jquery_livefilter",
   "common_utils",
   "tpl!apps/project/show/templates/sidebar.tpl",
   "tpl!apps/project/show/templates/findstory.tpl",
@@ -12,6 +13,7 @@ define [
   "tpl!apps/project/show/templates/show.tpl"
 ], (
   Devfeed,
+  LiveFilter,
   CommonUtils,
   sidebarTpl,
   findStoryTpl,
@@ -73,6 +75,7 @@ define [
       onMoreStories: ->
         @$(".more div").spin(false)
         @$(".more span").removeClass("hide")
+        @trigger("stories:more:rendered")
 
       onCompositeCollectionRendered: ->
         if @collection.size() > 0
@@ -96,6 +99,12 @@ define [
         "click .settings-cog a": "settingsClicked"
         "change .settings input[type=checkbox]": "settingsChanged"
       filters: []
+
+      onRender: ->
+        @bindLiveFilter()
+
+      bindLiveFilter: ->
+        @$('.keyword input').fastLiveFilter('#stories .inner ul:first-child')        
 
       settingsClicked: (e) ->
         e.preventDefault()

@@ -13,6 +13,7 @@ require.config
     json2: "vendors/json2"
     jquery: "vendors/jquery"
     jquery_spin: "vendors/jquery.spin"
+    jquery_livefilter: "vendors/jquery.fastlivefilter"
     underscore: "vendors/underscore"
     backbone: "vendors/backbone"
     syphon: "vendors/backbone.syphon"
@@ -78,6 +79,8 @@ require.config
       exports: "$"
     jquery_spin:
       deps: ["jquery", "spin"]
+    jquery_livefilter:
+      deps: ["jquery"]
     underscore:
       exports: "_"
     backbone:
