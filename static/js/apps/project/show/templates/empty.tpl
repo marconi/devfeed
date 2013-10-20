@@ -1,1 +1,1 @@
-No stories on this project yet.
+No stories found.

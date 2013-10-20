@@ -130,6 +130,20 @@ define ["devfeed"], (Devfeed) ->
             defer.resolve null
         return defer.promise()
 
+      getFilteredStories: (id, filters) ->
+        defer = $.Deferred()
+        project = projects.get(id)
+        stories = project.get("stories")
+        stories.fetch
+          reset: true
+          data: project_id: id, filters: filters.join(",")
+          success: (collection, response, options) ->
+            stories.offset = 0
+            defer.resolve null
+          error: (collection, response, options) ->
+            defer.resolve null
+        return defer.promise()
+
     Devfeed.reqres.setHandler "project:entity", (id) ->
       return API.getProject(id)
 
@@ -138,5 +152,8 @@ define ["devfeed"], (Devfeed) ->
 
     Devfeed.reqres.setHandler "project:stories:more", (id) ->
       return API.getMoreStories(id)
+
+    Devfeed.reqres.setHandler "project:stories:filter", (id, filters) ->
+      return API.getFilteredStories(id, filters)
 
   return Devfeed.Entities.Proj

@@ -4,11 +4,11 @@
 </form>
 <div class="settings hide">
   <ul>
-    <li><label><input type="checkbox" name="state"> Unstarted</label></li>
-    <li><label><input type="checkbox" name="state"> Started</label></li>
-    <li><label><input type="checkbox" name="state"> Finished</label></li>
-    <li><label><input type="checkbox" name="state"> Delivered</label></li>
-    <li><label><input type="checkbox" name="state"> Accepted</label></li>
-    <li><label><input type="checkbox" name="state"> Rejected</label></li>
+    <li><label><input type="checkbox" name="unstarted"> Unstarted</label></li>
+    <li><label><input type="checkbox" name="started"> Started</label></li>
+    <li><label><input type="checkbox" name="finished"> Finished</label></li>
+    <li><label><input type="checkbox" name="delivered"> Delivered</label></li>
+    <li><label><input type="checkbox" name="accepted"> Accepted</label></li>
+    <li><label><input type="checkbox" name="rejected"> Rejected</label></li>
   </ul>
 </div>

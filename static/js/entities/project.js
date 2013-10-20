@@ -236,6 +236,27 @@
             }
           });
           return defer.promise();
+        },
+        getFilteredStories: function(id, filters) {
+          var defer, project, stories;
+          defer = $.Deferred();
+          project = projects.get(id);
+          stories = project.get("stories");
+          stories.fetch({
+            reset: true,
+            data: {
+              project_id: id,
+              filters: filters.join(",")
+            },
+            success: function(collection, response, options) {
+              stories.offset = 0;
+              return defer.resolve(null);
+            },
+            error: function(collection, response, options) {
+              return defer.resolve(null);
+            }
+          });
+          return defer.promise();
         }
       };
       Devfeed.reqres.setHandler("project:entity", function(id) {
@@ -244,8 +265,11 @@
       Devfeed.reqres.setHandler("project:entities", function() {
         return API.getProjects();
       });
-      return Devfeed.reqres.setHandler("project:stories:more", function(id) {
+      Devfeed.reqres.setHandler("project:stories:more", function(id) {
         return API.getMoreStories(id);
+      });
+      return Devfeed.reqres.setHandler("project:stories:filter", function(id, filters) {
+        return API.getFilteredStories(id, filters);
       });
     });
     return Devfeed.Entities.Proj;

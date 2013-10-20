@@ -3,13 +3,26 @@ define [
   "common_utils",
   "tpl!apps/project/show/templates/sidebar.tpl",
   "tpl!apps/project/show/templates/findstory.tpl",
+  "tpl!apps/project/show/templates/filterpreloader.tpl",
   "tpl!apps/project/show/templates/stories.tpl",
   "tpl!apps/project/show/templates/story.tpl",
   "tpl!apps/project/show/templates/empty.tpl",
   "tpl!apps/project/show/templates/chatinfo.tpl",
   "tpl!apps/project/show/templates/chatbox.tpl",
   "tpl!apps/project/show/templates/show.tpl"
-], (Devfeed, CommonUtils, sidebarTpl, findStoryTpl, storiesTpl, storyTpl, emptyTpl, chatinfoTpl, chatboxTpl, showTpl) ->
+], (
+  Devfeed,
+  CommonUtils,
+  sidebarTpl,
+  findStoryTpl,
+  filterPreloaderTpl,
+  storiesTpl,
+  storyTpl,
+  emptyTpl,
+  chatinfoTpl,
+  chatboxTpl,
+  showTpl
+  ) ->
 
   Devfeed.module "ProjectApp.Show.View", (View, Devfeed, Backbone, Marionette, $, _) ->
 
@@ -35,11 +48,11 @@ define [
 
       taskClicked: (e) ->
         e.preventDefault()
-        aEl = $(e.currentTarget)
-        aEl.toggleClass("complete")
+        $a = $(e.currentTarget)
+        $a.toggleClass("complete")
 
-        checkBox = aEl.find("input[type=checkbox]")
-        checkBox.prop "checked", (i, value) ->
+        $checkbox = $a.find("input[type=checkbox]")
+        $checkbox.prop "checked", (i, value) ->
           return not value
 
     class View.Stories extends Marionette.CompositeView
@@ -65,12 +78,24 @@ define [
         @$(".more div").spin(false)
         @$(".more span").removeClass("hide")
 
+      onStoriesFiltered: ->
+        console.log "stories filtered!"
+
+    class View.FilterPreloader extends Marionette.ItemView
+      id: "filter-preloader"
+      template: filterPreloaderTpl
+      onDomRefresh: ->
+        @$(".loading").spin(CommonUtils.SmallSpin)
+        if not $("#find-story .settings").hasClass("hide")
+          @$el.addClass("settings-shown")
+
     class View.FindStory extends Marionette.ItemView
       id: "find-story"
       className: "small-12 columns"
       template: findStoryTpl
       events:
         "click .settings-cog a": "settingsClicked"
+        "change .settings input[type=checkbox]": "settingsChanged"
 
       settingsClicked: (e) ->
         e.preventDefault()
@@ -80,6 +105,13 @@ define [
           @trigger("settings:hidden")  
         @$(".settings").toggleClass("hide")
 
+      settingsChanged: (e) ->
+        filters = _.filter @$(".settings input[type=checkbox]"), (checkbox) ->
+          return $(checkbox).is(":checked")
+        filters = _.map filters, (filter) ->
+          return $(filter).attr("name")
+        @trigger("filters:changed", filters)
+
     class View.Sidebar extends Marionette.Layout
       id: "sidebar"
       template: sidebarTpl
@@ -88,10 +120,38 @@ define [
       regions:
         findStoryRegion: "#find-story-region"
         storiesRegion: "#stories-region"
+      filterPreloaderView: null
+      storiesView: null
 
       hidesidebarClicked: (e) ->
         e.preventDefault()
         console.log "hiding..."
+
+      onFiltersChanged: (filters) ->
+        if not @storiesView
+          # store a reference to the stories view for it'll be overridden
+          # when the filter preloader is shown
+          @storiesView = @storiesRegion.currentView
+
+          @filterPreloaderView = new View.FilterPreloader
+          @storiesRegion.show(@filterPreloaderView)
+
+        # query for stories with the filters applied
+        @storiesView.trigger("filters:changed", filters)
+
+      onStoriesFiltered: ->
+        @storiesRegion.show(@storiesView)
+        @storiesView = null
+
+      onSettingsShown: ->
+        @storiesRegion.currentView.$el.addClass("settings-shown")
+        if @filterPreloaderView
+          @filterPreloaderView.$el.addClass("settings-shown")        
+
+      onSettingsHidden: ->
+        @storiesRegion.currentView.$el.removeClass("settings-shown")
+        if @filterPreloaderView
+          @filterPreloaderView.$el.removeClass("settings-shown")
 
     class View.Chatinfo extends Marionette.ItemView
       id: "chatinfo"

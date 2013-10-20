@@ -180,11 +180,17 @@ func (p *Project) SyncMoreInfo(token string) error {
 }
 
 // get the stored  project stories
-func (p *Project) GetStories(paging utils.PagingInfo) ([]*Story, error) {
+func (p *Project) GetStories(paging utils.PagingInfo, filters ...string) ([]*Story, error) {
 	var stories []*Story
 	c := core.Db.C("stories")
+
+	f := bson.M{"projectid": p.Id}
+	if len(filters) > 0 {
+		f["currentstate"] = bson.M{"$in": filters}
+	}
+
 	// NOTE: we sort by `id` since pivotal hasn't implemented before_id field yet
-	q := c.Find(bson.M{"projectid": p.Id}).Sort("id").Skip(paging.Offset()).Limit(paging.Limit())
+	q := c.Find(f).Sort("id").Skip(paging.Offset()).Limit(paging.Limit())
 	if err := q.All(&stories); err != nil {
 		return nil, err
 	}

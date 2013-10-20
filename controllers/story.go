@@ -3,6 +3,7 @@ package controllers
 import (
 	"net/http"
 	"strconv"
+	"strings"
 
 	log "github.com/cihub/seelog"
 	"github.com/marconi/devfeed/core"
@@ -48,8 +49,14 @@ func (c *StoryController) ReadMany(ctx context.Context) error {
 		return goweb.Respond.WithStatus(ctx, http.StatusBadRequest)
 	}
 
+	var filters []string
+	rawFilters := ctx.QueryValue("filters")
+	if len(rawFilters) > 0 {
+		filters = strings.Split(rawFilters, ",")
+	}
+
 	// query more stories
-	stories, err := project.GetStories(utils.NewPaging(offset, core.Config.App.StoriesPaging))
+	stories, err := project.GetStories(utils.NewPaging(offset, core.Config.App.StoriesPaging), filters...)
 	if err != nil {
 		log.Error("Unable to get stories for project ", projId, " with offset ", offset, ": ", err)
 	}

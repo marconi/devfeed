@@ -1,0 +1,1 @@
+<span class="loading"></span> <span class="message">Applying filters...</span>

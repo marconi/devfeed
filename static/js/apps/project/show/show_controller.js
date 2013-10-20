@@ -26,20 +26,29 @@
               collection: project.get("stories")
             });
             storiesView.on("stories:more", function() {
-              var fetchingStories, projectId;
-              projectId = project.get("id");
-              fetchingStories = Devfeed.request("project:stories:more", projectId);
+              var fetchingStories;
+              fetchingStories = Devfeed.request("project:stories:more", project.get("id"));
               return $.when(fetchingStories).done(function() {
                 return storiesView.triggerMethod("more:stories");
+              });
+            });
+            storiesView.on("filters:changed", function(filters) {
+              var filteringStories;
+              filteringStories = Devfeed.request("project:stories:filter", project.get("id"), filters);
+              return $.when(filteringStories).done(function() {
+                return sidebarView.triggerMethod("stories:filtered");
               });
             });
             sidebarView.storiesRegion.show(storiesView);
             findStoryView = new ProjectShowView.FindStory;
             findStoryView.on("settings:shown", function() {
-              return storiesView.$el.addClass("settings-shown");
+              return sidebarView.triggerMethod("settings:shown");
             });
             findStoryView.on("settings:hidden", function() {
-              return storiesView.$el.removeClass("settings-shown");
+              return sidebarView.triggerMethod("settings:hidden");
+            });
+            findStoryView.on("filters:changed", function(filters) {
+              return sidebarView.triggerMethod("filters:changed", filters);
             });
             return sidebarView.findStoryRegion.show(findStoryView);
           });

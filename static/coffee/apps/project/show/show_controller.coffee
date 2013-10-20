@@ -29,18 +29,24 @@ define [
           storiesView = new ProjectShowView.Stories
             collection: project.get("stories")
           storiesView.on "stories:more", ->
-            projectId = project.get("id")
-            fetchingStories = Devfeed.request("project:stories:more", projectId)
+            fetchingStories = Devfeed.request("project:stories:more", project.get("id"))
             $.when(fetchingStories).done ->
               storiesView.triggerMethod("more:stories")
+          storiesView.on "filters:changed", (filters) ->
+            filteringStories = Devfeed.request("project:stories:filter", project.get("id"), filters)
+            $.when(filteringStories).done ->
+              # storiesView.triggerMethod("stories:filtered")
+              sidebarView.triggerMethod("stories:filtered")
           sidebarView.storiesRegion.show(storiesView)
 
           # render find story form
           findStoryView = new ProjectShowView.FindStory
           findStoryView.on "settings:shown", ->
-            storiesView.$el.addClass("settings-shown")
+            sidebarView.triggerMethod("settings:shown")
           findStoryView.on "settings:hidden", ->
-            storiesView.$el.removeClass("settings-shown")
+            sidebarView.triggerMethod("settings:hidden")
+          findStoryView.on "filters:changed", (filters) ->
+            sidebarView.triggerMethod("filters:changed", filters)
           sidebarView.findStoryRegion.show(findStoryView)
 
   return Devfeed.ProjectApp.Show.Controller
