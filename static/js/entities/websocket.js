@@ -9,9 +9,11 @@
         function WebSocket() {
           this.projectSubscribe = __bind(this.projectSubscribe, this);
           this.projectSynced = __bind(this.projectSynced, this);
+          this.message = __bind(this.message, this);
           this.open = __bind(this.open, this);
           this.wsConn = new Golem.Connection("ws://" + CONFIG.baseUrl + "/ws", CONFIG.wsDebug);
           this.wsConn.on("open", this.open);
+          this.wsConn.on("message", this.message);
           this.wsConn.on("project:synced", this.projectSynced);
         }
 
@@ -21,6 +23,10 @@
           return this.wsConn.emit("init", {
             user_id: userSession.get("id")
           });
+        };
+
+        WebSocket.prototype.message = function(message) {
+          return console.log(message);
         };
 
         WebSocket.prototype.projectSynced = function(projectId) {

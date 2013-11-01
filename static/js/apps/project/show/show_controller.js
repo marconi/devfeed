@@ -43,6 +43,9 @@
             projectShowView.sidebarRegion.show(sidebarView);
             projectShowView.chatinfoRegion.show(chatinfoView);
             projectShowView.chatboxRegion.show(chatboxView);
+            projectShowView.on("message:send", function(body) {
+              return Devfeed.execute("chat:message:send", project.get("id"), body);
+            });
             storiesView = renderStories(sidebarView, [], project);
             findStoryView = new ProjectShowView.FindStory;
             bindOnStoriesRendered(storiesView, findStoryView);

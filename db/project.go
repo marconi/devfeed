@@ -48,6 +48,7 @@ func (s *Story) FetchTasks(token string) ([]*Task, error) {
 }
 
 type Project struct {
+	ObjectId bson.ObjectId `bson:"_id,omitempty"json:"object_id"`
 	pivotal.Project `bson:",inline"`
 
 	// devfeed specific fields

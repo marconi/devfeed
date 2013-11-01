@@ -1,8 +1,9 @@
 define [
   "devfeed",
+  "chat",
   "project_list_controller",
   "project_show_controller"
-], (Devfeed, ProjectListController, ProjectShowController) ->
+], (Devfeed, Chat, ProjectListController, ProjectShowController) ->
 
   Devfeed.module "ProjectApp", (ProjectApp, Devfeed, Backbone, Marionette, $, _) ->
 

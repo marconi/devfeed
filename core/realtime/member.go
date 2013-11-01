@@ -29,7 +29,6 @@ func NewMember(conn *golem.Connection, channelName string) *Member {
 }
 
 func (m *Member)handlePubSub() {
-    log.Info("Subscribing to channel: ", m.ChannelName)
     m.Redis.Subscribe(m.ChannelName)
     defer m.Redis.Close()
     for {

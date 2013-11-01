@@ -38,6 +38,8 @@ define [
           projectShowView.sidebarRegion.show(sidebarView)
           projectShowView.chatinfoRegion.show(chatinfoView)
           projectShowView.chatboxRegion.show(chatboxView)
+          projectShowView.on "message:send", (body) ->
+            Devfeed.execute("chat:message:send", project.get("id"), body)
 
           # render stories
           storiesView = renderStories(sidebarView, [], project)
@@ -70,6 +72,5 @@ define [
 
           # subscribe to project chat room
           Devfeed.execute("ws:project:subscribe", id)
-
 
   return Devfeed.ProjectApp.Show.Controller

@@ -40,7 +40,6 @@ func ProjectSubscribe(conn *golem.Connection, data *websocket.ProjSub) {
     }
     channelName := fmt.Sprintf("project:%d", projId)
     Channels[projId].Roster.Add(user, NewMember(conn, channelName))
-    log.Info("Subscribed to project: ", projId)
 }
 
 func InitRealtime() {

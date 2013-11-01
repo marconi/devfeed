@@ -168,5 +168,15 @@ define [
         sidebarRegion: "#sidebar-region"
         chatinfoRegion: "#chatinfo-region"
         chatboxRegion: "#chatbox-region"
+      events:
+        "keypress #chatinput input": "keypressedInput"
+
+      keypressedInput: (e) ->
+        if e.keyCode == 13
+          e.preventDefault()
+          $input = $(e.currentTarget)
+          message = $input.val()
+          $input.val("").focus()
+          @trigger("message:send", message)
 
   return Devfeed.ProjectApp.Show.View

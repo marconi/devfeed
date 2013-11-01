@@ -429,6 +429,10 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	err = goweb.MapController("api/messages", new(controllers.MessageController))
+	if err != nil {
+		panic(err)
+	}
 
 	// run the server
 	addr := fmt.Sprintf(":%s", strconv.Itoa(core.Config.App.Port))

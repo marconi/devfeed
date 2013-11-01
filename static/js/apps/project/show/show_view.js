@@ -290,6 +290,21 @@
           chatboxRegion: "#chatbox-region"
         };
 
+        Show.prototype.events = {
+          "keypress #chatinput input": "keypressedInput"
+        };
+
+        Show.prototype.keypressedInput = function(e) {
+          var $input, message;
+          if (e.keyCode === 13) {
+            e.preventDefault();
+            $input = $(e.currentTarget);
+            message = $input.val();
+            $input.val("").focus();
+            return this.trigger("message:send", message);
+          }
+        };
+
         return Show;
 
       })(Marionette.Layout);

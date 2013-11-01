@@ -41,6 +41,7 @@ require.config
     alert: "entities/alert"
     project: "entities/project"
     websocket: "entities/websocket"
+    chat: "entities/chat"
 
     # common app
     common_view: "apps/common/common_view"
