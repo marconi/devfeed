@@ -4,16 +4,19 @@ define ["devfeed", "golem"], (Devfeed, Golem) ->
 
     class Entities.WebSocket
       constructor: ->
-        @WsConn = new Golem.Connection("ws://" + CONFIG.baseUrl + "/ws", CONFIG.wsDebug)
-        @WsConn.on "open", @open
-        @WsConn.on "project:synced", @projectSynced
+        @wsConn = new Golem.Connection("ws://" + CONFIG.baseUrl + "/ws", CONFIG.wsDebug)
+        @wsConn.on "open", @open
+        @wsConn.on "project:synced", @projectSynced
    
       open: =>
         userSession = Devfeed.request("user:session")
-        @WsConn.emit "init", user_id: userSession.get("id")
+        @wsConn.emit "init", user_id: userSession.get("id")
    
       projectSynced: (projectId) =>
         Devfeed.trigger "project:synced", projectId
+
+      projectSubscribe: (projectId) =>
+        @wsConn.emit "project:subscribe", project_id: projectId
 
     websocket = null
 
@@ -27,6 +30,9 @@ define ["devfeed", "golem"], (Devfeed, Golem) ->
       getWebSocket: ->
         return websocket
 
+      projectSubscribe: (projectId) ->
+        websocket.projectSubscribe(projectId)
+
     Devfeed.on "loggedin", ->
       # create websocket when someone logs-in
       API.createWebSocket()
@@ -34,7 +40,7 @@ define ["devfeed", "golem"], (Devfeed, Golem) ->
     Devfeed.reqres.setHandler "websocket:entity", ->
       return API.getWebSocket()
 
-    Devfeed.commands.setHandler "websocket:create", ->
-      API.createWebSocket()
+    Devfeed.commands.setHandler "ws:project:subscribe", (projectId) ->
+      API.projectSubscribe(projectId)
 
   return Devfeed.Entities.WebSocket

@@ -66,7 +66,8 @@
                 }
               });
             });
-            return sidebarView.findStoryRegion.show(findStoryView);
+            sidebarView.findStoryRegion.show(findStoryView);
+            return Devfeed.execute("ws:project:subscribe", id);
           });
         }
       };

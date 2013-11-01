@@ -7,23 +7,30 @@
       var API, websocket;
       Entities.WebSocket = (function() {
         function WebSocket() {
+          this.projectSubscribe = __bind(this.projectSubscribe, this);
           this.projectSynced = __bind(this.projectSynced, this);
           this.open = __bind(this.open, this);
-          this.WsConn = new Golem.Connection("ws://" + CONFIG.baseUrl + "/ws", CONFIG.wsDebug);
-          this.WsConn.on("open", this.open);
-          this.WsConn.on("project:synced", this.projectSynced);
+          this.wsConn = new Golem.Connection("ws://" + CONFIG.baseUrl + "/ws", CONFIG.wsDebug);
+          this.wsConn.on("open", this.open);
+          this.wsConn.on("project:synced", this.projectSynced);
         }
 
         WebSocket.prototype.open = function() {
           var userSession;
           userSession = Devfeed.request("user:session");
-          return this.WsConn.emit("init", {
+          return this.wsConn.emit("init", {
             user_id: userSession.get("id")
           });
         };
 
         WebSocket.prototype.projectSynced = function(projectId) {
           return Devfeed.trigger("project:synced", projectId);
+        };
+
+        WebSocket.prototype.projectSubscribe = function(projectId) {
+          return this.wsConn.emit("project:subscribe", {
+            project_id: projectId
+          });
         };
 
         return WebSocket;
@@ -38,6 +45,9 @@
         },
         getWebSocket: function() {
           return websocket;
+        },
+        projectSubscribe: function(projectId) {
+          return websocket.projectSubscribe(projectId);
         }
       };
       Devfeed.on("loggedin", function() {
@@ -46,8 +56,8 @@
       Devfeed.reqres.setHandler("websocket:entity", function() {
         return API.getWebSocket();
       });
-      return Devfeed.commands.setHandler("websocket:create", function() {
-        return API.createWebSocket();
+      return Devfeed.commands.setHandler("ws:project:subscribe", function(projectId) {
+        return API.projectSubscribe(projectId);
       });
     });
     return Devfeed.Entities.WebSocket;

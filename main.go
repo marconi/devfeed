@@ -10,6 +10,7 @@ import (
 	"github.com/eknkc/amber"
 	"github.com/marconi/devfeed/controllers"
 	"github.com/marconi/devfeed/core"
+	"github.com/marconi/devfeed/core/realtime"
 	"github.com/marconi/devfeed/db"
 	"github.com/stretchr/goweb"
 	"github.com/stretchr/goweb/context"
@@ -19,7 +20,7 @@ func init() {
 	core.LoadConfig()
 	core.InitMongo()
 	core.InitSessionStore(new(db.User))
-	core.InitRealtime()
+	realtime.InitRealtime()
 }
 
 func index(ctx context.Context) error {
@@ -115,7 +116,7 @@ func login(ctx context.Context) error {
 		ApiToken  string `json:"apitoken"`
 	}{
 		SessionID: session.ID,
-		Id:        user.GetId(),
+		Id:        user.Id.Hex(),
 		Name:      user.Name,
 		Email:     user.Email,
 		ApiToken:  user.Person.ApiToken,
@@ -197,7 +198,7 @@ func isloggedin(ctx context.Context) error {
 			ApiToken  string `json:"apitoken"`
 		}{
 			SessionID: session.ID,
-			Id:        user.GetId(),
+			Id:        user.Id.Hex(),
 			Name:      user.Name,
 			Email:     user.Email,
 			ApiToken:  user.Person.ApiToken,
@@ -319,6 +320,16 @@ func settingsUpdate(ctx context.Context) error {
 	if err != nil {
 		log.Error("Unable to update user settings: ", err)
 		return goweb.Respond.WithStatus(ctx, http.StatusInternalServerError)
+	}
+
+	// sync projects if there are no errors and an apitoken was provided
+	if len(fieldErrs) == 0 && err == nil && apitoken != "" {
+		wsConn, err := realtime.UserConn.GetConnByUser(user)
+		if err != nil {
+			log.Error("Unable to find websocket connection: ", err)
+		} else {
+			go user.SyncProjectsAndNotify(wsConn)
+		}
 	}
 
 	// when no errors were found, update was successful

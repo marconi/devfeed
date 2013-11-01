@@ -68,4 +68,8 @@ define [
                 storiesView.$el.addClass("settings-shown")
           sidebarView.findStoryRegion.show(findStoryView)
 
+          # subscribe to project chat room
+          Devfeed.execute("ws:project:subscribe", id)
+
+
   return Devfeed.ProjectApp.Show.Controller

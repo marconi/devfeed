@@ -11,10 +11,11 @@ import (
 
 	"code.google.com/p/go.crypto/bcrypt"
 	log "github.com/cihub/seelog"
+	"github.com/trevex/golem"
 	"github.com/dchest/uniuri"
 	"github.com/marconi/devfeed/core"
 	"github.com/marconi/devfeed/libs/pivotal"
-	"github.com/marconi/devfeed/libs/websocket"
+	// "github.com/marconi/devfeed/core/realtime"
 	"github.com/marconi/devfeed/utils"
 	"labix.org/v2/mgo/bson"
 )
@@ -46,11 +47,6 @@ func NewInactiveUser(name, email, password string) (*User, error) {
 		Created:       time.Now().UTC(),
 		Person:        new(pivotal.Me),
 	}, nil
-}
-
-func (u *User) GetId() string {
-	userId, _ := u.Id.MarshalJSON()
-	return string(userId)
 }
 
 func (u *User) SendActivationEmail() error {
@@ -207,9 +203,6 @@ func (u *User) Update(name, email, password, apitoken string) (map[string]string
 		} else {
 			u.Person = me
 			u.Person.ApiToken = apitoken
-
-			// sync projects
-			go u.syncProjectsAndNotify()
 		}
 	}
 
@@ -225,13 +218,7 @@ func (u *User) Update(name, email, password, apitoken string) (map[string]string
 	return nil, nil
 }
 
-func (u *User) syncProjectsAndNotify() {
-	wsConn, err := websocket.UserConn.GetConnById(u.GetId())
-	if err != nil {
-		log.Error("Unable to websocket connection: ", err)
-		return
-	}
-
+func (u *User) SyncProjectsAndNotify(conn *golem.Connection) {
 	projChan, err := u.SyncProjects()
 	if err != nil {
 		log.Error(err)
@@ -242,7 +229,7 @@ func (u *User) syncProjectsAndNotify() {
 		select {
 		case projId := <-projChan:
 			if projId > 0 {
-				wsConn.Emit("project:synced", projId)
+				conn.Emit("project:synced", projId)
 			} else {
 				log.Info("Exiting projects counter...")
 				return
@@ -426,6 +413,16 @@ func GetUserByEmail(email string) (*User, error) {
 	c := core.Db.C("users")
 	user := new(User)
 	err := c.Find(bson.M{"email": email}).One(&user)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func GetUserById(id string) (*User, error) {
+	c := core.Db.C("users")
+	user := new(User)
+	err := c.Find(bson.M{"_id": bson.ObjectIdHex(id)}).One(&user)
 	if err != nil {
 		return nil, err
 	}
