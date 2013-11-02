@@ -15,11 +15,13 @@ import (
 )
 
 type Story struct {
+	Oid bson.ObjectId `bson:"_id,omitempty"json:"oid"`
 	pivotal.Story `bson:",inline"`
 	Tasks         []*Task `json:"tasks"`
 }
 
 type Task struct {
+	Oid bson.ObjectId `bson:"_id,omitempty"json:"oid"`
 	pivotal.Task `bson:",inline"`
 }
 
@@ -48,7 +50,7 @@ func (s *Story) FetchTasks(token string) ([]*Task, error) {
 }
 
 type Project struct {
-	ObjectId bson.ObjectId `bson:"_id,omitempty"json:"object_id"`
+	Oid bson.ObjectId `bson:"_id,omitempty"json:"oid"`
 	pivotal.Project `bson:",inline"`
 
 	// devfeed specific fields

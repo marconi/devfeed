@@ -31,6 +31,7 @@
       project: "entities/project",
       websocket: "entities/websocket",
       chat: "entities/chat",
+      common_model: "apps/common/common_model",
       common_view: "apps/common/common_view",
       common_utils: "apps/common/common_utils",
       auth_app: "apps/auth/auth_app",

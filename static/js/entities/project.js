@@ -3,7 +3,7 @@
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define(["devfeed"], function(Devfeed) {
+  define(["devfeed", "common_model"], function(Devfeed, CommonModel) {
     Devfeed.module("Entities", function(Entities, Devfeed, Backbone, Marionette, $, _) {
       var API, projects, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
       Entities.Proj = {};
@@ -16,6 +16,7 @@
         }
 
         Task.prototype.defaults = {
+          oid: null,
           id: null,
           position: null,
           description: null,
@@ -53,6 +54,7 @@
         }
 
         Story.prototype.defaults = {
+          oid: null,
           id: null,
           name: null,
           description: null,
@@ -91,21 +93,11 @@
 
         Stories.prototype.url = "/api/stories";
 
-        Stories.prototype.comparator = function(story) {
-          return story.get("id");
-        };
-
-        Stories.prototype.parse = function(response, options) {
-          if (response.s === 200) {
-            return response.d;
-          }
-        };
-
         Stories.prototype.offset = 0;
 
         return Stories;
 
-      })(Backbone.Collection);
+      })(CommonModel.BaseCollection);
       Entities.Proj.Project = (function(_super) {
         __extends(Project, _super);
 
@@ -115,6 +107,7 @@
         }
 
         Project.prototype.defaults = {
+          oid: null,
           id: null,
           name: null,
           issynced: false,
@@ -123,12 +116,6 @@
         };
 
         Project.prototype.urlRoot = "/api/projects";
-
-        Project.prototype.parse = function(response, options) {
-          if (response.s === 200) {
-            return response.d;
-          }
-        };
 
         Project.prototype.initialize = function() {
           this.convertRawStories();
@@ -146,7 +133,7 @@
 
         return Project;
 
-      })(Backbone.Model);
+      })(CommonModel.BaseModel);
       Entities.Proj.Projects = (function(_super) {
         __extends(Projects, _super);
 
@@ -159,19 +146,9 @@
 
         Projects.prototype.url = "/api/projects";
 
-        Projects.prototype.comparator = function(project) {
-          return project.get("id");
-        };
-
-        Projects.prototype.parse = function(response, options) {
-          if (response.s === 200) {
-            return response.d;
-          }
-        };
-
         return Projects;
 
-      })(Backbone.Collection);
+      })(CommonModel.BaseCollection);
       projects = new Entities.Proj.Projects(((typeof Projects !== "undefined" && Projects !== null) && Projects) || null);
       API = {
         getProject: function(id) {

@@ -1,4 +1,4 @@
-define ["devfeed"], (Devfeed) ->
+define ["devfeed", "common_model"], (Devfeed, CommonModel) ->
 
   Devfeed.module "Entities", (Entities, Devfeed, Backbone, Marionette, $, _) ->
 
@@ -6,6 +6,7 @@ define ["devfeed"], (Devfeed) ->
 
     class Entities.Proj.Task extends Backbone.Model
       defaults:
+        oid: null
         id: null
         position: null
         description: null
@@ -20,6 +21,7 @@ define ["devfeed"], (Devfeed) ->
 
     class Entities.Proj.Story extends Backbone.Model
       defaults:
+        oid: null
         id: null
         name: null
         description: null
@@ -37,28 +39,20 @@ define ["devfeed"], (Devfeed) ->
           tasks = new Entities.Proj.Tasks(rawTasks)
           @set("tasks", tasks)
 
-    class Entities.Proj.Stories extends Backbone.Collection
+    class Entities.Proj.Stories extends CommonModel.BaseCollection
       model: Entities.Proj.Story
       url: "/api/stories"
-      comparator: (story) ->
-        return story.get("id")
-      parse: (response, options) ->
-        if response.s == 200
-          return response.d
       offset: 0
 
-    class Entities.Proj.Project extends Backbone.Model
+    class Entities.Proj.Project extends CommonModel.BaseModel
       defaults:
+        oid: null
         id: null
         name: null
         issynced: false
         stories: []
         time_zone: null
       urlRoot: "/api/projects"
-      parse: (response, options) ->
-        if response.s == 200
-          return response.d
-
       initialize: ->
         @convertRawStories()
 
@@ -72,14 +66,9 @@ define ["devfeed"], (Devfeed) ->
           stories = new Entities.Proj.Stories(rawStories)
           @set("stories", stories)
 
-    class Entities.Proj.Projects extends Backbone.Collection
+    class Entities.Proj.Projects extends CommonModel.BaseCollection
       model: Entities.Proj.Project
       url: "/api/projects"
-      comparator: (project) ->
-        return project.get("id")
-      parse: (response, options) ->
-        if response.s == 200
-          return response.d
 
     projects = new Entities.Proj.Projects((Projects? and Projects) or null)
 

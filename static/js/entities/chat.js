@@ -3,7 +3,7 @@
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define(["devfeed"], function(Devfeed) {
+  define(["devfeed", "common_model"], function(Devfeed, CommonModel) {
     Devfeed.module("Entities", function(Entities, Devfeed, Backbone, Marionette, $, _) {
       var API, messages, _ref, _ref1;
       Entities.Chat = {};
@@ -23,9 +23,11 @@
           created: null
         };
 
+        Message.prototype.url = "/api/messages";
+
         return Message;
 
-      })(Backbone.Model);
+      })(CommonModel.BaseModel);
       Entities.Chat.Messages = (function(_super) {
         __extends(Messages, _super);
 
@@ -38,24 +40,21 @@
 
         Messages.prototype.url = "/api/messages";
 
-        Messages.prototype.comparator = function(message) {
-          return message.get("id");
-        };
-
         return Messages;
 
-      })(Backbone.Model);
+      })(CommonModel.BaseCollection);
       messages = new Entities.Chat.Messages;
       API = {
-        sendMessage: function(projectId, body) {
-          return messages.save({
-            project_id: projectId,
+        sendMessage: function(objId, body) {
+          messages.create({
+            project_id: objId,
             body: body
           });
+          return console.log(messages);
         }
       };
-      return Devfeed.commands.setHandler("chat:message:send", function(projectId, body) {
-        return API.sendMessage(projectId, body);
+      return Devfeed.commands.setHandler("chat:message:send", function(objId, body) {
+        return API.sendMessage(objId, body);
       });
     });
     return Devfeed.Entities.Chat;

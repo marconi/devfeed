@@ -4,6 +4,7 @@ import (
     "net/http"
     "errors"
     "fmt"
+    "time"
 
     log "github.com/cihub/seelog"
     "labix.org/v2/mgo"
@@ -26,23 +27,33 @@ func (c *MessageController) Create(ctx context.Context) error {
         return goweb.Respond.WithStatus(ctx, http.StatusInternalServerError)
     }
 
+    // create message instance
     dataMap := data.(map[string]interface{})
-    projId := dataMap["project_id"].(float64)
+    projId := dataMap["project_id"].(string)
     body := dataMap["body"].(string)
-
-    proj, err := db.GetProjectById(int(projId))
-    if err != nil {
-        log.Error("Unable to find project: ", err)
-        return goweb.Respond.WithStatus(ctx, http.StatusInternalServerError)   
-    }
     authorRef := &mgo.DBRef{Collection: "users", Id: user.Id.Hex()}
-    projRef := &mgo.DBRef{Collection: "projects", Id: proj.ObjectId.Hex()}
-
+    projRef := &mgo.DBRef{Collection: "projects", Id: projId}
     message := db.NewMessage(authorRef, projRef, body)
+
+    // save the message
     mc := core.Db.C("messages")
     if err = mc.Insert(message); err != nil {
         log.Error(errors.New(fmt.Sprintf("Unable to save message: %s", err)))
         return goweb.Respond.WithStatus(ctx, http.StatusInternalServerError)
     }
-    return goweb.Respond.WithStatus(ctx, http.StatusCreated)
+
+    data = struct {
+        Id string `json:"id"`
+        AuthorId string `json:"author_id"`
+        ProjectId string `json:"project_id"`
+        Body string `json:"body"`
+        Created time.Time `json:"created"`
+    }{
+        message.Id.Hex(),
+        message.AuthorId.Id.(string),
+        message.ProjectId.Id.(string),
+        message.Body,
+        message.Created,
+    }
+    return goweb.API.RespondWithData(ctx, data)
 }

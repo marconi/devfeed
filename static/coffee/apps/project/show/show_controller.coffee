@@ -39,7 +39,7 @@ define [
           projectShowView.chatinfoRegion.show(chatinfoView)
           projectShowView.chatboxRegion.show(chatboxView)
           projectShowView.on "message:send", (body) ->
-            Devfeed.execute("chat:message:send", project.get("id"), body)
+            Devfeed.execute("chat:message:send", project.get("oid"), body)
 
           # render stories
           storiesView = renderStories(sidebarView, [], project)

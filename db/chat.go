@@ -9,7 +9,7 @@ import (
 
 type Message struct {
     Id        bson.ObjectId `bson:"_id,omitempty"`
-    AuthorId  *mgo.DBRef `bson:"author_id"`
+    AuthorId  *mgo.DBRef `json:"author_id"`
     ProjectId *mgo.DBRef `json:"project_id"`
     Body      string `json:"body"`
     Created   time.Time `json:"created"`
@@ -17,6 +17,7 @@ type Message struct {
 
 func NewMessage(authorId, projId *mgo.DBRef, body string) *Message {
     return &Message{
+        Id: bson.NewObjectId(), // we generate id since insert doesn't fetch generated id
         AuthorId: authorId,
         ProjectId: projId,
         Body: body,

@@ -44,6 +44,7 @@ require.config
     chat: "entities/chat"
 
     # common app
+    common_model: "apps/common/common_model"
     common_view: "apps/common/common_view"
     common_utils: "apps/common/common_utils"
 
