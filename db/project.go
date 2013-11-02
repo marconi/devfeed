@@ -11,18 +11,17 @@ import (
 	"github.com/marconi/devfeed/core"
 	"github.com/marconi/devfeed/libs/pivotal"
 	"github.com/marconi/devfeed/utils"
-	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
 )
 
 type Story struct {
-	Oid bson.ObjectId `bson:"_id,omitempty"json:"oid"`
+	Oid           bson.ObjectId `bson:"_id,omitempty"json:"oid"`
 	pivotal.Story `bson:",inline"`
 	Tasks         []*Task `json:"tasks"`
 }
 
 type Task struct {
-	Oid bson.ObjectId `bson:"_id,omitempty"json:"oid"`
+	Oid          bson.ObjectId `bson:"_id,omitempty"json:"oid"`
 	pivotal.Task `bson:",inline"`
 }
 
@@ -51,7 +50,7 @@ func (s *Story) FetchTasks(token string) ([]*Task, error) {
 }
 
 type Project struct {
-	Oid bson.ObjectId `bson:"_id,omitempty"json:"oid"`
+	Oid             bson.ObjectId `bson:"_id,omitempty"json:"oid"`
 	pivotal.Project `bson:",inline"`
 
 	// devfeed specific fields
@@ -204,8 +203,7 @@ func (p *Project) GetStories(paging utils.PagingInfo, filters ...string) ([]*Sto
 func (p *Project) GetRecentMessages(limit int) ([]*Message, error) {
 	var messages []*Message
 	c := core.Db.C("messages")
-	projRef := &mgo.DBRef{Collection: "projects", Id: p.Oid.Hex()}
-	q := c.Find(bson.M{"projectid": projRef}).Limit(limit)
+	q := c.Find(bson.M{"projectid.$id": p.Oid.Hex()}).Limit(limit)
 	if err := q.All(&messages); err != nil {
 		return nil, err
 	}

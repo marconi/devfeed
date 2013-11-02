@@ -15,9 +15,10 @@
         }
 
         BaseModel.prototype.parse = function(response, options) {
-          if (response.s === 200) {
+          if ((response.s != null) && (response.d != null) && response.s === 200) {
             return response.d;
           }
+          return response;
         };
 
         return BaseModel;
@@ -36,9 +37,10 @@
         };
 
         BaseCollection.prototype.parse = function(response, options) {
-          if (response.s === 200) {
+          if ((response.s != null) && (response.d != null) && response.s === 200) {
             return response.d;
           }
+          return response;
         };
 
         return BaseCollection;
