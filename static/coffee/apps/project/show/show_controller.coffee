@@ -31,7 +31,13 @@ define [
           sidebarView = new ProjectShowView.Sidebar
             model: project
           chatinfoView = new ProjectShowView.Chatinfo
+
           chatboxView = new ProjectShowView.Chatbox
+          chatboxView.on "messages:fetch", ->
+            fetchingMessages = Devfeed.request("chat:messages:fetch", project.get("id"))
+            $.when(fetchingMessages).done (messages) ->
+              console.log messages
+
           projectShowView = new ProjectShowView.Show
             model: project
           Devfeed.contentRegion.show(projectShowView)

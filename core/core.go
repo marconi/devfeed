@@ -34,6 +34,7 @@ type AppConfig struct {
 		BaseUrl       string
 		Debug         bool
 		StoriesPaging int
+		InitialChatMessages int
 	}
 	Redis struct {
 		Url string

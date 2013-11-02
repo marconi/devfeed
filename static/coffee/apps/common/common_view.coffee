@@ -75,6 +75,14 @@ define [
       id: "preloader"
       className: "row collapse"
       template: preloaderTpl
+      ui:
+        innerColumns: ".columns"
+        message: ".message"
+      onRender: ->
+        message = @options.message or "Loading..."
+        innerClass = @options.innerClassName or "small-7 large-3"
+        @ui.innerColumns.addClass(innerClass)
+        @ui.message.html(message)
       onDomRefresh: ->
         @$(".loading").spin
           lines: 10, length: 13, width: 8, radius: 13, corners: 1

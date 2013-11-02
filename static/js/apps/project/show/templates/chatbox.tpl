@@ -1,4 +1,4 @@
-<div class="small-12 columns">
+<div id="messages-region" class="small-12 columns">
   <div class="message small-12 columns">
     <div class="avatar">
       <img src="/static/images/me.png">

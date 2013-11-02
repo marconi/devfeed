@@ -7,7 +7,7 @@
 
   <div id="chatinput" class="row collapse">
     <form>
-      <input type="text" placeholder="Say something...">
+      <input type="text" placeholder="Say something..." disabled="true" class="disable">
     </form>
   </div>
 </div>

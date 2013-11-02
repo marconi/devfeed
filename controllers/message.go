@@ -16,6 +16,42 @@ import (
 
 type MessageController struct{}
 
+func (c *MessageController) ReadMany(ctx context.Context) error {
+    user, isLoggedIn := IsLoggedIn(ctx)
+    if !isLoggedIn {
+        return goweb.Respond.WithStatus(ctx, http.StatusUnauthorized)
+    }
+
+    projId, err := strconv.Atoi()
+    if err != nil {
+        log.Error("Unable to get project id: ", err)
+        return goweb.Respond.WithStatus(ctx, http.StatusBadRequest)
+    }
+
+    // check if user actually is a member of project
+    mc := core.Db.C("memberships")
+    count, err := mc.Find(bson.M{"personid": user.Person.Id, "projectid": projId}).Count()
+    if err != nil || count == 0 {
+        log.Error("Unable to find membership of user ", user.Person.Id, " on project: ", projId)
+        return goweb.Respond.WithStatus(ctx, http.StatusBadRequest)
+    }
+
+    // load project
+    project, err := db.GetProjectById(projId)
+    if err != nil {
+        log.Error("Unable to get project: ", err)
+        return goweb.Respond.WithStatus(ctx, http.StatusBadRequest)
+    }
+
+    // load recent messages
+    messages, err := project.GetRecentMessages(limit=core.Config.App.InitialChatMessages)
+    if err != nil {
+        log.Error("Unable to get recent messages for project ", projId, ": ", err)
+    }
+
+    return goweb.API.RespondWithData(ctx, messages)
+}
+
 func (c *MessageController) Create(ctx context.Context) error {
     user, isLoggedIn := IsLoggedIn(ctx)
     if !isLoggedIn {

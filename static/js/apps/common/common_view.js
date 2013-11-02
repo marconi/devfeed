@@ -113,6 +113,19 @@
 
         Preloader.prototype.template = preloaderTpl;
 
+        Preloader.prototype.ui = {
+          innerColumns: ".columns",
+          message: ".message"
+        };
+
+        Preloader.prototype.onRender = function() {
+          var innerClass, message;
+          message = this.options.message || "Loading...";
+          innerClass = this.options.innerClassName || "small-7 large-3";
+          this.ui.innerColumns.addClass(innerClass);
+          return this.ui.message.html(message);
+        };
+
         Preloader.prototype.onDomRefresh = function() {
           return this.$(".loading").spin({
             lines: 10,

@@ -7,7 +7,8 @@
         "SessName": "devfeed",
         "BaseUrl": "http://dvfeed.com",
         "Debug": false,
-        "StoriesPaging": 20
+        "StoriesPaging": 20,
+        "InitialChatMessages": 20
     },
     "Redis": {
         "Url": "localhost:6379"

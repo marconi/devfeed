@@ -36,6 +36,13 @@
             });
             chatinfoView = new ProjectShowView.Chatinfo;
             chatboxView = new ProjectShowView.Chatbox;
+            chatboxView.on("messages:fetch", function() {
+              var fetchingMessages;
+              fetchingMessages = Devfeed.request("chat:messages:fetch", project.get("id"));
+              return $.when(fetchingMessages).done(function(messages) {
+                return console.log(messages);
+              });
+            });
             projectShowView = new ProjectShowView.Show({
               model: project
             });

@@ -2,6 +2,7 @@ define [
   "devfeed",
   "jquery_livefilter",
   "common_utils",
+  "common_view",
   "tpl!apps/project/show/templates/sidebar.tpl",
   "tpl!apps/project/show/templates/findstory.tpl",
   "tpl!apps/project/show/templates/filterpreloader.tpl",
@@ -15,6 +16,7 @@ define [
   Devfeed,
   LiveFilter,
   CommonUtils,
+  CommonView,
   sidebarTpl,
   findStoryTpl,
   filterPreloaderTpl,
@@ -156,9 +158,20 @@ define [
         e.preventDefault()
         Devfeed.trigger("projects:list")
 
-    class View.Chatbox extends Marionette.ItemView
+    class View.Chatbox extends Marionette.Layout
       id: "chatbox"
       template: chatboxTpl
+      regions:
+        messagesRegion: "#messages-region"
+      onDomRefresh: ->
+        # show preloader first
+        preloaderView = new CommonView.Preloader
+          message: "Loading messages..."
+          innerClassName: "small-10 large-6"
+        @messagesRegion.show(preloaderView)
+
+        # trigger fetching of messages
+        @trigger("messages:fetch")
 
     class View.Show extends Marionette.Layout
       id: "project-details"

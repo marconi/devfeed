@@ -45,16 +45,35 @@
       })(CommonModel.BaseCollection);
       messages = new Entities.Chat.Messages;
       API = {
+        fetchMessages: function(projId) {
+          var defer;
+          defer = $.Deferred();
+          messages.fetch({
+            reset: true,
+            data: {
+              project_id: projId
+            },
+            success: function(collection, response, options) {
+              return defer.resolve(messages);
+            },
+            error: function(collection, response, options) {
+              return defer.resolve(null);
+            }
+          });
+          return defer.promise();
+        },
         sendMessage: function(objId, body) {
-          messages.create({
+          return messages.create({
             project_id: objId,
             body: body
           });
-          return console.log(messages);
         }
       };
-      return Devfeed.commands.setHandler("chat:message:send", function(objId, body) {
-        return API.sendMessage(objId, body);
+      Devfeed.reqres.setHandler("chat:messages:fetch", function(objId) {
+        return API.fetchMessages(objId);
+      });
+      return Devfeed.commands.setHandler("chat:message:send", function(projId, body) {
+        return API.sendMessage(projId, body);
       });
     });
     return Devfeed.Entities.Chat;

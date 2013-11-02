@@ -20,11 +20,25 @@ define ["devfeed", "common_model"], (Devfeed, CommonModel) ->
     messages = new Entities.Chat.Messages
 
     API =
+      fetchMessages: (projId) ->
+        defer = $.Deferred()
+        messages.fetch
+          reset: true
+          data:
+            project_id: projId
+          success: (collection, response, options) ->
+            defer.resolve messages
+          error: (collection, response, options) ->
+            defer.resolve null
+        return defer.promise()
+
       sendMessage: (objId, body) ->
         messages.create project_id: objId, body: body
-        console.log messages
 
-    Devfeed.commands.setHandler "chat:message:send", (objId, body) ->
-      API.sendMessage(objId, body)
+    Devfeed.reqres.setHandler "chat:messages:fetch", (objId) ->
+      return API.fetchMessages(objId)
+
+    Devfeed.commands.setHandler "chat:message:send", (projId, body) ->
+      API.sendMessage(projId, body)
 
   return Devfeed.Entities.Chat
