@@ -5,9 +5,11 @@ import (
     "errors"
     "fmt"
     "time"
+    "strconv"
 
     log "github.com/cihub/seelog"
     "labix.org/v2/mgo"
+    "labix.org/v2/mgo/bson"
     "github.com/stretchr/goweb"
     "github.com/stretchr/goweb/context"
     "github.com/marconi/devfeed/db"
@@ -22,7 +24,7 @@ func (c *MessageController) ReadMany(ctx context.Context) error {
         return goweb.Respond.WithStatus(ctx, http.StatusUnauthorized)
     }
 
-    projId, err := strconv.Atoi()
+    projId, err := strconv.Atoi(ctx.QueryValue("project_id"))
     if err != nil {
         log.Error("Unable to get project id: ", err)
         return goweb.Respond.WithStatus(ctx, http.StatusBadRequest)
@@ -44,9 +46,10 @@ func (c *MessageController) ReadMany(ctx context.Context) error {
     }
 
     // load recent messages
-    messages, err := project.GetRecentMessages(limit=core.Config.App.InitialChatMessages)
+    messages, err := project.GetRecentMessages(core.Config.App.InitialChatMessages)
     if err != nil {
         log.Error("Unable to get recent messages for project ", projId, ": ", err)
+        return goweb.Respond.WithStatus(ctx, http.StatusInternalServerError)
     }
 
     return goweb.API.RespondWithData(ctx, messages)

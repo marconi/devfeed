@@ -8,9 +8,9 @@ import (
 )
 
 type Message struct {
-    Id        bson.ObjectId `bson:"_id,omitempty"`
-    AuthorId  *mgo.DBRef `json:"author_id"`
-    ProjectId *mgo.DBRef `json:"project_id"`
+    Id        bson.ObjectId `bson:"_id,omitempty"json:"id"`
+    AuthorId  *mgo.DBRef `json:"author_id,string"`
+    ProjectId *mgo.DBRef `json:"project_id,string"`  // TODO: find way to flatten DBRef
     Body      string `json:"body"`
     Created   time.Time `json:"created"`
 }

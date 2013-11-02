@@ -11,6 +11,7 @@ import (
 	"github.com/marconi/devfeed/core"
 	"github.com/marconi/devfeed/libs/pivotal"
 	"github.com/marconi/devfeed/utils"
+	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
 )
 
@@ -198,6 +199,17 @@ func (p *Project) GetStories(paging utils.PagingInfo, filters ...string) ([]*Sto
 		return nil, err
 	}
 	return stories, nil
+}
+
+func (p *Project) GetRecentMessages(limit int) ([]*Message, error) {
+	var messages []*Message
+	c := core.Db.C("messages")
+	projRef := &mgo.DBRef{Collection: "projects", Id: p.Oid.Hex()}
+	q := c.Find(bson.M{"projectid": projRef}).Limit(limit)
+	if err := q.All(&messages); err != nil {
+		return nil, err
+	}
+	return messages, nil
 }
 
 type ProjectMembership struct {
