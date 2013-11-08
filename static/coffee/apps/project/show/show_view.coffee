@@ -11,6 +11,7 @@ define [
   "tpl!apps/project/show/templates/empty.tpl",
   "tpl!apps/project/show/templates/chatinfo.tpl",
   "tpl!apps/project/show/templates/chatbox.tpl",
+  "tpl!apps/project/show/templates/message.tpl",
   "tpl!apps/project/show/templates/show.tpl"
 ], (
   Devfeed,
@@ -25,6 +26,7 @@ define [
   emptyTpl,
   chatinfoTpl,
   chatboxTpl,
+  messageTpl,
   showTpl
   ) ->
 
@@ -158,20 +160,15 @@ define [
         e.preventDefault()
         Devfeed.trigger("projects:list")
 
-    class View.Chatbox extends Marionette.Layout
+    class View.Message extends Marionette.ItemView
+      className: "message small-12 columns"
+      template: messageTpl
+
+    class View.Chatbox extends Marionette.CompositeView
       id: "chatbox"
       template: chatboxTpl
-      regions:
-        messagesRegion: "#messages-region"
-      onDomRefresh: ->
-        # show preloader first
-        preloaderView = new CommonView.Preloader
-          message: "Loading messages..."
-          innerClassName: "small-10 large-6"
-        @messagesRegion.show(preloaderView)
-
-        # trigger fetching of messages
-        @trigger("messages:fetch")
+      itemView: View.Message
+      itemViewContainer: "#messages"
 
     class View.Show extends Marionette.Layout
       id: "project-details"
@@ -191,5 +188,10 @@ define [
           message = $input.val()
           $input.val("").focus()
           @trigger("message:send", message)
+
+      onEnableInput: ->
+        @$("#chatinput input")
+          .removeClass("disable")
+          .removeAttr("disabled")
 
   return Devfeed.ProjectApp.Show.View

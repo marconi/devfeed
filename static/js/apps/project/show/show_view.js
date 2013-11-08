@@ -3,9 +3,9 @@
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define(["devfeed", "jquery_livefilter", "common_utils", "common_view", "tpl!apps/project/show/templates/sidebar.tpl", "tpl!apps/project/show/templates/findstory.tpl", "tpl!apps/project/show/templates/filterpreloader.tpl", "tpl!apps/project/show/templates/stories.tpl", "tpl!apps/project/show/templates/story.tpl", "tpl!apps/project/show/templates/empty.tpl", "tpl!apps/project/show/templates/chatinfo.tpl", "tpl!apps/project/show/templates/chatbox.tpl", "tpl!apps/project/show/templates/show.tpl"], function(Devfeed, LiveFilter, CommonUtils, CommonView, sidebarTpl, findStoryTpl, filterPreloaderTpl, storiesTpl, storyTpl, emptyTpl, chatinfoTpl, chatboxTpl, showTpl) {
+  define(["devfeed", "jquery_livefilter", "common_utils", "common_view", "tpl!apps/project/show/templates/sidebar.tpl", "tpl!apps/project/show/templates/findstory.tpl", "tpl!apps/project/show/templates/filterpreloader.tpl", "tpl!apps/project/show/templates/stories.tpl", "tpl!apps/project/show/templates/story.tpl", "tpl!apps/project/show/templates/empty.tpl", "tpl!apps/project/show/templates/chatinfo.tpl", "tpl!apps/project/show/templates/chatbox.tpl", "tpl!apps/project/show/templates/message.tpl", "tpl!apps/project/show/templates/show.tpl"], function(Devfeed, LiveFilter, CommonUtils, CommonView, sidebarTpl, findStoryTpl, filterPreloaderTpl, storiesTpl, storyTpl, emptyTpl, chatinfoTpl, chatboxTpl, messageTpl, showTpl) {
     Devfeed.module("ProjectApp.Show.View", function(View, Devfeed, Backbone, Marionette, $, _) {
-      var _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8;
+      var _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9;
       View.Empty = (function(_super) {
         __extends(Empty, _super);
 
@@ -255,41 +255,46 @@
         return Chatinfo;
 
       })(Marionette.ItemView);
+      View.Message = (function(_super) {
+        __extends(Message, _super);
+
+        function Message() {
+          _ref7 = Message.__super__.constructor.apply(this, arguments);
+          return _ref7;
+        }
+
+        Message.prototype.className = "message small-12 columns";
+
+        Message.prototype.template = messageTpl;
+
+        return Message;
+
+      })(Marionette.ItemView);
       View.Chatbox = (function(_super) {
         __extends(Chatbox, _super);
 
         function Chatbox() {
-          _ref7 = Chatbox.__super__.constructor.apply(this, arguments);
-          return _ref7;
+          _ref8 = Chatbox.__super__.constructor.apply(this, arguments);
+          return _ref8;
         }
 
         Chatbox.prototype.id = "chatbox";
 
         Chatbox.prototype.template = chatboxTpl;
 
-        Chatbox.prototype.regions = {
-          messagesRegion: "#messages-region"
-        };
+        Chatbox.prototype.itemView = View.Message;
 
-        Chatbox.prototype.onDomRefresh = function() {
-          var preloaderView;
-          preloaderView = new CommonView.Preloader({
-            message: "Loading messages...",
-            innerClassName: "small-10 large-6"
-          });
-          this.messagesRegion.show(preloaderView);
-          return this.trigger("messages:fetch");
-        };
+        Chatbox.prototype.itemViewContainer = "#messages";
 
         return Chatbox;
 
-      })(Marionette.Layout);
+      })(Marionette.CompositeView);
       return View.Show = (function(_super) {
         __extends(Show, _super);
 
         function Show() {
-          _ref8 = Show.__super__.constructor.apply(this, arguments);
-          return _ref8;
+          _ref9 = Show.__super__.constructor.apply(this, arguments);
+          return _ref9;
         }
 
         Show.prototype.id = "project-details";
@@ -317,6 +322,10 @@
             $input.val("").focus();
             return this.trigger("message:send", message);
           }
+        };
+
+        Show.prototype.onEnableInput = function() {
+          return this.$("#chatinput input").removeClass("disable").removeAttr("disabled");
         };
 
         return Show;

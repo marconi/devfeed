@@ -30,18 +30,14 @@
           Devfeed.contentRegion.show(preloaderView);
           fetchingProject = Devfeed.request("project:entity", id);
           return $.when(fetchingProject).done(function(project) {
-            var chatboxView, chatinfoView, findStoryView, projectShowView, sidebarView, storiesView;
+            var chatinfoView, fetchingMessages, findStoryView, messagesPreloaderView, projectShowView, sidebarView, storiesView;
             sidebarView = new ProjectShowView.Sidebar({
               model: project
             });
             chatinfoView = new ProjectShowView.Chatinfo;
-            chatboxView = new ProjectShowView.Chatbox;
-            chatboxView.on("messages:fetch", function() {
-              var fetchingMessages;
-              fetchingMessages = Devfeed.request("chat:messages:fetch", project.get("id"));
-              return $.when(fetchingMessages).done(function(messages) {
-                return console.log(messages);
-              });
+            messagesPreloaderView = new CommonView.Preloader({
+              message: "Loading messages...",
+              innerClassName: "small-10 large-6"
             });
             projectShowView = new ProjectShowView.Show({
               model: project
@@ -49,9 +45,22 @@
             Devfeed.contentRegion.show(projectShowView);
             projectShowView.sidebarRegion.show(sidebarView);
             projectShowView.chatinfoRegion.show(chatinfoView);
-            projectShowView.chatboxRegion.show(chatboxView);
+            projectShowView.chatboxRegion.show(messagesPreloaderView);
             projectShowView.on("message:send", function(body) {
-              return Devfeed.execute("chat:message:send", project.get("oid"), body);
+              var sending;
+              sending = Devfeed.request("chat:message:send", project.get("oid"), body);
+              return $.when(sending).done(function(message) {
+                return console.log("scrolling...");
+              });
+            });
+            fetchingMessages = Devfeed.request("chat:messages:fetch", project.get("id"));
+            $.when(fetchingMessages).done(function(messages) {
+              var chatboxView;
+              chatboxView = new ProjectShowView.Chatbox({
+                collection: messages
+              });
+              projectShowView.chatboxRegion.show(chatboxView);
+              return projectShowView.triggerMethod("enable:input");
             });
             storiesView = renderStories(sidebarView, [], project);
             findStoryView = new ProjectShowView.FindStory;

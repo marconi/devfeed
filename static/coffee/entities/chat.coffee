@@ -7,7 +7,9 @@ define ["devfeed", "common_model"], (Devfeed, CommonModel) ->
     class Entities.Chat.Message extends CommonModel.BaseModel
       defaults:
         id: null
-        author_id: null
+        author:
+          id: null
+          name: null
         project_id: null
         body: null
         created: null
@@ -33,12 +35,24 @@ define ["devfeed", "common_model"], (Devfeed, CommonModel) ->
         return defer.promise()
 
       sendMessage: (objId, body) ->
-        messages.create project_id: objId, body: body
+        defer = $.Deferred()
+        # TODO: checkout if collection.create has a flag to not add the
+        # model into collection until the request is done since it won't
+        # render all the fields. 
+        message = new Entities.Chat.Message
+          project_id: objId, body: body
+        message.save null,
+          success: ->
+            messages.add(message)
+            defer.resolve message
+          error: ->
+            defer.resolve null
+        return defer.promise()
 
     Devfeed.reqres.setHandler "chat:messages:fetch", (objId) ->
       return API.fetchMessages(objId)
 
-    Devfeed.commands.setHandler "chat:message:send", (projId, body) ->
-      API.sendMessage(projId, body)
+    Devfeed.reqres.setHandler "chat:message:send", (projId, body) ->
+      return API.sendMessage(projId, body)
 
   return Devfeed.Entities.Chat

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"time"
 
 	log "github.com/cihub/seelog"
 	"github.com/marconi/devfeed/core"
@@ -15,6 +14,19 @@ import (
 	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
 )
+
+type BasicAuthor struct {
+	Id   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type MsgFlat struct {
+	Id        string       `json:"id"`
+	Author    *BasicAuthor `json:"author"`
+	ProjectId string       `json:"project_id"`
+	Body      string       `json:"body"`
+	Created   string       `json:"created"`
+}
 
 type MessageController struct{}
 
@@ -53,21 +65,22 @@ func (c *MessageController) ReadMany(ctx context.Context) error {
 	}
 
 	// WARNING: hack to flatten DBRef for now
-	type MsgFlat struct {
-		Id        string    `json:"id"`
-		AuthorId  string    `json:"author_id"`
-		ProjectId string    `json:"project_id"`
-		Body      string    `json:"body"`
-		Created   time.Time `json:"created"`
-	}
 	var msgs []*MsgFlat
 	for _, msg := range messages {
+		author, err := msg.GetAuthor()
+		if err != nil {
+			log.Error("Unable to get author of message ", msg.Id.Hex(), " : ", err)
+			continue
+		}
 		msgFlat := &MsgFlat{
-			Id:        msg.Id.Hex(),
-			AuthorId:  msg.AuthorId.Id.(string),
+			Id: msg.Id.Hex(),
+			Author: &BasicAuthor{
+				Id:   author.Id.Hex(),
+				Name: author.Name,
+			},
 			ProjectId: msg.ProjectId.Id.(string),
 			Body:      msg.Body,
-			Created:   msg.Created,
+			Created:   msg.Created.Format("Mon, 02 Jan 2006 03:04 PM"),
 		}
 		msgs = append(msgs, msgFlat)
 	}
@@ -101,18 +114,15 @@ func (c *MessageController) Create(ctx context.Context) error {
 		return goweb.Respond.WithStatus(ctx, http.StatusInternalServerError)
 	}
 
-	data = struct {
-		Id        string    `json:"id"`
-		AuthorId  string    `json:"author_id"`
-		ProjectId string    `json:"project_id"`
-		Body      string    `json:"body"`
-		Created   time.Time `json:"created"`
-	}{
-		message.Id.Hex(),
-		message.AuthorId.Id.(string),
-		message.ProjectId.Id.(string),
-		message.Body,
-		message.Created,
+	msg := &MsgFlat{
+		Id: message.Id.Hex(),
+		Author: &BasicAuthor{
+			Id:   user.Id.Hex(),
+			Name: user.Name,
+		},
+		ProjectId: message.ProjectId.Id.(string),
+		Body:      message.Body,
+		Created:   message.Created.Format("Mon, 02 Jan 2006 03:04 PM"),
 	}
-	return goweb.API.RespondWithData(ctx, data)
+	return goweb.API.RespondWithData(ctx, msg)
 }

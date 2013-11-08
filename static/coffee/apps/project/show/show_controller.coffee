@@ -32,20 +32,29 @@ define [
             model: project
           chatinfoView = new ProjectShowView.Chatinfo
 
-          chatboxView = new ProjectShowView.Chatbox
-          chatboxView.on "messages:fetch", ->
-            fetchingMessages = Devfeed.request("chat:messages:fetch", project.get("id"))
-            $.when(fetchingMessages).done (messages) ->
-              console.log messages
+          # instantiate messages preloader
+          messagesPreloaderView = new CommonView.Preloader
+            message: "Loading messages..."
+            innerClassName: "small-10 large-6"
 
           projectShowView = new ProjectShowView.Show
             model: project
           Devfeed.contentRegion.show(projectShowView)
           projectShowView.sidebarRegion.show(sidebarView)
           projectShowView.chatinfoRegion.show(chatinfoView)
-          projectShowView.chatboxRegion.show(chatboxView)
+          projectShowView.chatboxRegion.show(messagesPreloaderView)
           projectShowView.on "message:send", (body) ->
-            Devfeed.execute("chat:message:send", project.get("oid"), body)
+            sending = Devfeed.request("chat:message:send", project.get("oid"), body)
+            $.when(sending).done (message) ->
+              console.log "scrolling..."
+
+          # fetch and show messages
+          fetchingMessages = Devfeed.request("chat:messages:fetch", project.get("id"))
+          $.when(fetchingMessages).done (messages) ->
+            chatboxView = new ProjectShowView.Chatbox
+              collection: messages
+            projectShowView.chatboxRegion.show(chatboxView)
+            projectShowView.triggerMethod("enable:input")
 
           # render stories
           storiesView = renderStories(sidebarView, [], project)

@@ -17,7 +17,10 @@
 
         Message.prototype.defaults = {
           id: null,
-          author_id: null,
+          author: {
+            id: null,
+            name: null
+          },
           project_id: null,
           body: null,
           created: null
@@ -63,16 +66,28 @@
           return defer.promise();
         },
         sendMessage: function(objId, body) {
-          return messages.create({
+          var defer, message;
+          defer = $.Deferred();
+          message = new Entities.Chat.Message({
             project_id: objId,
             body: body
           });
+          message.save(null, {
+            success: function() {
+              messages.add(message);
+              return defer.resolve(message);
+            },
+            error: function() {
+              return defer.resolve(null);
+            }
+          });
+          return defer.promise();
         }
       };
       Devfeed.reqres.setHandler("chat:messages:fetch", function(objId) {
         return API.fetchMessages(objId);
       });
-      return Devfeed.commands.setHandler("chat:message:send", function(projId, body) {
+      return Devfeed.reqres.setHandler("chat:message:send", function(projId, body) {
         return API.sendMessage(projId, body);
       });
     });

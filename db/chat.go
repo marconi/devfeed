@@ -3,6 +3,7 @@ package db
 import (
 	"time"
 
+	"github.com/marconi/devfeed/core"
 	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
 )
@@ -23,4 +24,19 @@ func NewMessage(authorId, projId *mgo.DBRef, body string) *Message {
 		Body:      body,
 		Created:   time.Now().UTC(),
 	}
+}
+
+func (m *Message) GetAuthor() (*User, error) {
+	var author *User
+
+	// FindRef requires ObjectId so we have to reinitialize it here.
+	// Probably too much, ugh! :(
+	dbref := &mgo.DBRef{
+		Collection: m.AuthorId.Collection,
+		Id:         bson.ObjectIdHex(m.AuthorId.Id.(string)),
+	}
+	if err := core.Db.FindRef(dbref).One(&author); err != nil {
+		return nil, err
+	}
+	return author, nil
 }
