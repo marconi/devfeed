@@ -66,14 +66,13 @@ type membershipsummary struct {
 	ProjectName string `json:"project_name"`
 }
 
-type Me struct {
-	Id       int                  `json:"id"`
-	Name     string               `json:"name"`
-	Initials string               `json:"initials"`
-	Email    string               `json:"email"`
-	ApiToken string               `json:"api_token"`
-	TimeZone *Timezone            `json:"time_zone"`
-	Projects []*membershipsummary `json:"projects"`
+type PtUser struct {
+	Id       int64  `json:"id"`
+	Name     string `json:"name"`
+	Initials string `json:"initials"`
+	Email    string `json:"email"`
+	ApiToken string `json:"api_token"`
+	Timezone `json:"time_zone"`
 }
 
 type Story struct {

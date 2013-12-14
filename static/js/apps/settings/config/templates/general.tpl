@@ -10,8 +10,11 @@
         <section class="active general">
           <p class="title"><a href="#">General</a></p>
           <div class="content">
-            <form method="post">
+            <form method="post" enctype="multipart/form-data">
               <div class="alert-region"></div>
+              <div class="small-12 columns">
+                <input type="file" name="avatar">
+              </div>
               <div class="small-12 columns">
                 <input name="name" type="text" placeholder="Name" value="<%= name %>">
               </div>

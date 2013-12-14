@@ -1,3 +1,4 @@
 static/.sass-cache
 vendor/*
 test.go
+src/node_modules

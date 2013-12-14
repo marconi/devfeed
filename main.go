@@ -295,6 +295,14 @@ func settingsUpdate(ctx context.Context) error {
 	rw := ctx.HttpResponseWriter()
 	session, _ := core.GetSession(r)
 
+	d, err := ctx.RequestData()
+	if err != nil {
+		log.Error("Unable to retrieve request data: ", err)
+		return goweb.Respond.WithStatus(ctx, http.StatusInternalServerError)
+	}
+
+	log.Info(d)
+
 	name := ctx.PostValue("name")
 	email := ctx.PostValue("email")
 	password := ctx.PostValue("password")

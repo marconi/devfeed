@@ -11,24 +11,24 @@ import (
 
 	"code.google.com/p/go.crypto/bcrypt"
 	log "github.com/cihub/seelog"
-	"github.com/trevex/golem"
 	"github.com/dchest/uniuri"
 	"github.com/marconi/devfeed/core"
 	"github.com/marconi/devfeed/libs/pivotal"
-	// "github.com/marconi/devfeed/core/realtime"
 	"github.com/marconi/devfeed/utils"
+	"github.com/trevex/golem"
 	"labix.org/v2/mgo/bson"
 )
 
 type User struct {
-	Id            bson.ObjectId `bson:"_id,omitempty"`
+	Id            int64
 	Name          string
 	Email         string
 	Password      []byte
 	IsActive      bool
 	ActivationKey string
 	Created       time.Time
-	Person        *pivotal.Me
+	ApiToken      string
+	PtUserId      int64
 }
 
 func NewInactiveUser(name, email, password string) (*User, error) {
@@ -45,7 +45,6 @@ func NewInactiveUser(name, email, password string) (*User, error) {
 		IsActive:      false,
 		ActivationKey: utils.GenerateKey(email),
 		Created:       time.Now().UTC(),
-		Person:        new(pivotal.Me),
 	}, nil
 }
 
